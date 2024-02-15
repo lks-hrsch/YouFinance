@@ -1,0 +1,8 @@
+backend:
+    - '(backend|BACKEND)'
+frontend:
+    - '(frontend|FRONTEND)'
+enhancement:
+    - '(enhancement|ENHANCEMENT|feature|FEATURE)'
+bug:
+    - '(bug|BUG)'
