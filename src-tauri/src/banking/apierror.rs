@@ -10,7 +10,7 @@ pub enum ApiError {
     Reqwest(reqwest::Error),
     Serde(serde_json::Error),
     InvalidHeader(InvalidHeaderValue),
-    Custom(String)
+    Custom(String),
 }
 
 impl Serialize for ApiError {

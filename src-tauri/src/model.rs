@@ -1,6 +1,6 @@
+use crate::schema::{accounts, providers, transaction_tags};
 use diesel::prelude::*;
-use serde::{Serialize, Deserialize};
-use crate::schema::{providers, accounts, transaction_tags};
+use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
 
 #[typeshare]
@@ -58,7 +58,7 @@ pub struct NewAccount {
     pub provider_id: i32,
     pub institution_id: String,
     pub bank_connection_id: String,
-    pub account_id: String
+    pub account_id: String,
 }
 
 #[typeshare]
@@ -96,6 +96,3 @@ pub struct TransactionTag {
     pub transaction_id: Option<i32>,
     pub tag_id: Option<i32>,
 }
-
-
-

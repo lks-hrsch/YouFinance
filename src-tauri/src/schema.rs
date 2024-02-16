@@ -56,10 +56,4 @@ diesel::joinable!(transaction_tags -> tags (tag_id));
 diesel::joinable!(transaction_tags -> transactions (transaction_id));
 diesel::joinable!(transactions -> accounts (account_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    accounts,
-    providers,
-    tags,
-    transaction_tags,
-    transactions,
-);
+diesel::allow_tables_to_appear_in_same_query!(accounts, providers, tags, transaction_tags, transactions,);

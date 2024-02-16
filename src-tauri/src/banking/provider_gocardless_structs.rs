@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AccessToken {
@@ -18,7 +18,6 @@ pub struct Bank {
     countries: Vec<String>,
     logo: String,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Status {
@@ -100,9 +99,10 @@ pub struct BankTransactions {
     pub transactions: Transactions,
 }
 
+#[derive(Debug)]
 pub struct GoCardless {
     pub base_url: String,
     pub secret_id: String,
     pub secret_key: String,
-    pub access_token: Option<AccessToken>
+    pub access_token: Option<AccessToken>,
 }

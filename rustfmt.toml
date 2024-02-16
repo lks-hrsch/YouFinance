@@ -1,0 +1,8 @@
+max_width = 120
+reorder_imports = true
+ignore = [
+    ".git/",
+    "node_modules/",
+    "src/",
+    "src-tauri/target/"
+]
