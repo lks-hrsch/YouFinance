@@ -10,6 +10,7 @@ use crate::banking::trait_banking_api::BankingApi;
 use banking::providers::BankingProviders;
 use diesel::associations::HasTable;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
+use log::info;
 use model::*;
 
 #[tauri::command]
@@ -164,7 +165,8 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
             .as_ref()
             .map(|account| account.iban.clone())
             .unwrap_or(None);
-        let ammount: f32 = old_trans.transaction_amount.amount.parse().unwrap();
+        let ammount: f64 = old_trans.transaction_amount.amount.parse().unwrap();
+        let date = old_trans.booking_date.clone().unwrap_or("".to_string());
 
         Transaction {
             id: 0,
@@ -175,7 +177,7 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
             creditor_iban: creditor_iban,
             ammount: ammount,
             currency: old_trans.transaction_amount.clone().currency,
-            date: old_trans.booking_date.clone(),
+            date: date,
             remittance_information: old_trans.remittance_information_unstructured.clone(),
             account_id: account_id,
         }

@@ -72,7 +72,7 @@ pub struct Transaction {
     pub debitor_iban: Option<String>,
     pub creditor_name: Option<String>,
     pub creditor_iban: Option<String>,
-    pub ammount: f32,
+    pub ammount: f64,
     pub currency: String,
     pub date: String,
     pub remittance_information: Option<String>,

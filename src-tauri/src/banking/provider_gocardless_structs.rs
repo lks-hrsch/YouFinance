@@ -82,8 +82,10 @@ pub struct Transaction {
     pub debtor_account: Option<DebtorAccount>,
     pub creditor_account: Option<CreditorAccount>,
     pub transaction_amount: TransactionAmount,
-    pub booking_date: String,
-    pub value_date: String,
+    pub booking_date: Option<String>,
+    pub booking_date_time: Option<String>,
+    pub value_date: Option<String>,
+    pub value_date_time: Option<String>,
     pub remittance_information_unstructured: Option<String>,
     pub bank_transaction_code: Option<String>,
 }
