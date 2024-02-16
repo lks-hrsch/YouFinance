@@ -14,7 +14,7 @@ const BankAccountDataProviderList: React.FC = () => {
       try {
         // Replace 'get_providers' with your actual Tauri command
         invoke("get_banking_providers").then((rustBankingProviders: any) => {
-          let bankingProviders = rustBankingProviders as Provider[];
+          const bankingProviders = rustBankingProviders as Provider[];
           setProviders(bankingProviders);
         });
       } catch (error) {

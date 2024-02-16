@@ -27,7 +27,7 @@ const BankAccounts: React.FC = () => {
       providerTitle: providerName,
       institutionId: institutionID,
     }).then((rustBankConnectionInfo: any) => {
-      let bankConnectionInfo = rustBankConnectionInfo as BankConnectionInfo;
+      const bankConnectionInfo = rustBankConnectionInfo as BankConnectionInfo;
       console.log(bankConnectionInfo.link);
       window.open(bankConnectionInfo.link, "_blank");
       setRequisitionID(bankConnectionInfo.id);

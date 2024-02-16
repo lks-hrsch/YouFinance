@@ -14,7 +14,7 @@ const TransactionListComponent: React.FC = () => {
       try {
         // Replace 'get_providers' with your actual Tauri command
         invoke("get_transactions_handler").then((rustTransactions: any) => {
-          let transactions = rustTransactions as Transaction[];
+          const transactions = rustTransactions as Transaction[];
           setTransactions(transactions);
         });
       } catch (error) {

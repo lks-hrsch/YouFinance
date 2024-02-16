@@ -21,7 +21,7 @@ const BankAccountsList: React.FC = () => {
       try {
         // Replace 'get_providers' with your actual Tauri command
         invoke("get_banking_accounts").then((rustBankAccounts: any) => {
-          let bankAccounts = rustBankAccounts as Account[];
+          const bankAccounts = rustBankAccounts as Account[];
           setAccounts(bankAccounts);
         });
       } catch (error) {

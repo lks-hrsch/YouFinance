@@ -25,7 +25,7 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
           providerTitle: provider,
           country: country,
         }).then((rustBanks: any) => {
-          let banks = rustBanks as BankInfo[];
+          const banks = rustBanks as BankInfo[];
           setBanks(banks);
         });
       } catch (error) {
