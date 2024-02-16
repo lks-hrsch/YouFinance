@@ -24,7 +24,7 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
         invoke("get_banks_by_country_handler", {
           providerTitle: provider,
           country: country,
-        }).then((rustBanks: any) => {
+        }).then((rustBanks: unknown) => {
           const banks = rustBanks as BankInfo[];
           setBanks(banks);
         });

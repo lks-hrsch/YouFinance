@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 import { Transaction } from "../models/typeshare_definitions";
 
-import { List, ListItem, Typography, Card } from "@material-tailwind/react";
+import { List, ListItem, Typography } from "@material-tailwind/react";
 
 const TransactionListComponent: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -13,7 +13,7 @@ const TransactionListComponent: React.FC = () => {
     const fetchProviders = async () => {
       try {
         // Replace 'get_providers' with your actual Tauri command
-        invoke("get_transactions_handler").then((rustTransactions: any) => {
+        invoke("get_transactions_handler").then((rustTransactions: unknown) => {
           const transactions = rustTransactions as Transaction[];
           setTransactions(transactions);
         });
@@ -45,7 +45,7 @@ const TransactionListComponent: React.FC = () => {
       <List placeholder={undefined}>
         {/* Divide the list in 4 tiles */}
 
-        {transactions.map((transaction, index) => (
+        {transactions.map((transaction) => (
           <ListItem placeholder={undefined}>
             <div className="w-1/4">{transaction.date}</div>
             <div className="flex-row justify-center w-1/4">

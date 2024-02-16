@@ -17,8 +17,8 @@ const BankAccountDataProviderSelect: React.FC<BankingProviderSelectProps> = ({
       try {
         // Replace 'invoke' with the actual Tauri function call you use to fetch providers
         invoke("list_possible_banking_providers").then(
-          (rustBankingProvider: any) => {
-            setProviders(rustBankingProvider);
+          (rustBankingProvider: unknown) => {
+            setProviders(rustBankingProvider as string[]);
           },
         );
       } catch (error) {

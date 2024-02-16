@@ -26,7 +26,7 @@ const BankAccounts: React.FC = () => {
     invoke("connect_bank_account_phase_1", {
       providerTitle: providerName,
       institutionId: institutionID,
-    }).then((rustBankConnectionInfo: any) => {
+    }).then((rustBankConnectionInfo: unknown) => {
       const bankConnectionInfo = rustBankConnectionInfo as BankConnectionInfo;
       console.log(bankConnectionInfo.link);
       window.open(bankConnectionInfo.link, "_blank");
