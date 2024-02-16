@@ -1,8 +1,6 @@
 # YouFinance
 
-# Tauri + React + Typescript
-
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+This project aims to provide a simple and secure way to manage your finances. It lets you control where your data flows and how it is stored. It is built with Tauri, Rust, and Typescript.
 
 # setup
 

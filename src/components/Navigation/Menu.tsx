@@ -35,7 +35,7 @@ const Menu: React.FC = () => {
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
             placeholder={undefined}
           >
-            Finance App
+            YouFinance
           </Typography>
           <div className="hidden lg:block">
             <ListMenu />

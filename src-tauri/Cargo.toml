@@ -1,5 +1,5 @@
 [package]
-name = "tauri-app"
+name = "you-finance"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["Lukas Hirsch"]
