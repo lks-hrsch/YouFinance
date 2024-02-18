@@ -10,7 +10,7 @@ use crate::banking::trait_banking_api::BankingApi;
 use banking::providers::BankingProviders;
 use diesel::associations::HasTable;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
-use log::info;
+use log::error;
 use model::*;
 
 #[tauri::command]
@@ -225,5 +225,7 @@ async fn main() {
             get_transactions_handler
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .unwrap_or_else(|err| {
+            error!("Error while running tauri application: {}", err);
+        });
 }
