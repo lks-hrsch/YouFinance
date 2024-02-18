@@ -13,10 +13,12 @@ const BankAccountDataProviderList: React.FC = () => {
     const fetchProviders = async () => {
       try {
         // Replace 'get_providers' with your actual Tauri command
-        invoke("get_banking_providers").then((rustBankingProviders: unknown) => {
-          const bankingProviders = rustBankingProviders as Provider[];
-          setProviders(bankingProviders);
-        });
+        invoke("get_banking_providers").then(
+          (rustBankingProviders: unknown) => {
+            const bankingProviders = rustBankingProviders as Provider[];
+            setProviders(bankingProviders);
+          },
+        );
       } catch (error) {
         console.error("Failed to fetch providers:", error);
         // Handle error (e.g., show an error message to the user)

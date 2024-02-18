@@ -93,6 +93,6 @@ pub struct Tag {
 #[diesel(belongs_to(Tag, foreign_key = tag_id))]
 #[diesel(table_name = transaction_tags)]
 pub struct TransactionTag {
-    pub transaction_id: Option<i32>,
-    pub tag_id: Option<i32>,
+    pub transaction_id: i32,
+    pub tag_id: i32,
 }

@@ -63,8 +63,8 @@ export interface Tag {
 }
 
 export interface TransactionTag {
-  transaction_id?: number;
-  tag_id?: number;
+  transaction_id: number;
+  tag_id: number;
 }
 
 export enum BankingProviders {

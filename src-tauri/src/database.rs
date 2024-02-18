@@ -50,6 +50,10 @@ fn db_file_exists() -> bool {
 }
 
 fn get_db_path() -> String {
-    let home_dir = home_dir().unwrap();
-    home_dir.to_str().unwrap().to_string() + "/.config/database.sqlite"
+    if let Some(home_dir) = home_dir() {
+        let db_path = home_dir.join(".config/database.sqlite");
+        db_path.to_string_lossy().into()
+    } else {
+        panic!("Failed to determine home directory");
+    }
 }
