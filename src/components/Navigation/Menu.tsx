@@ -23,10 +23,7 @@ const Menu: React.FC = () => {
 
   return (
     <>
-      <Navbar
-        className="mx-auto max-w-screen-xl px-4 py-2"
-        placeholder={undefined}
-      >
+      <Navbar className="mx-auto mb-4" placeholder={undefined}>
         <div className="flex items-center justify-between text-blue-gray-900">
           <Typography
             as="a"
