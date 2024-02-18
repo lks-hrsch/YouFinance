@@ -1,18 +1,38 @@
 # YouFinance
 
-This project aims to provide a simple and secure way to manage your finances. It lets you control where your data flows and how it is stored. It is built with Tauri, Rust, and Typescript.
+This project aims to provide a simple and secure way to manage your finances. It allows you to have control over where your data flows and how it is stored. The project is built using Tauri, Rust, and Typescript.
 
-# setup
+## Setup
 
-## development
+### Tools Used
 
-This project is using typeshare to create the typescript type definitions from the rust implementation. You can find more about it here https://github.com/1Password/typeshare.
+- [Rust](https://www.rust-lang.org/)
+- [Tauri](https://tauri.app/)
+- [Node.js](https://nodejs.org/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Yarn](https://yarnpkg.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Material Tailwind](https://www.material-tailwind.com/)
+- [Heroicons](https://heroicons.com/)
+- [Typeshare](https://github.com/1password/typeshare)
+
+### Development
+
+This project utilizes Typeshare to generate TypeScript type definitions from the Rust implementation. You can find more information about Typeshare [here](https://github.com/1Password/typeshare).
+
+To generate the TypeScript type definitions, run the following command:
 
 ```bash
 typeshare . --lang=typescript --output-file=src/models/typeshare_definitions.ts
 ```
 
-to get a faster start we are using https://www.material-tailwind.com/
+For rapid frontend development, we utilize Material Tailwind, which can be found at https://www.material-tailwind.com/.
+
+To run the project in a development environment, execute the following command:
+
+```bash
+yarn tauri dev
+```
 
 ## Recommended IDE Setup
 
