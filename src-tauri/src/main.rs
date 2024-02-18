@@ -126,15 +126,17 @@ async fn connect_bank_account_phase_2(
 }
 
 #[tauri::command]
-fn get_banking_accounts() -> Vec<Account> {
+fn get_banking_accounts() -> Result<Vec<Account>, String> {
     use schema::accounts::dsl as accounts_dsl;
 
     let connection = &mut database::establish_db_connection();
-    let p: Vec<Account> = accounts_dsl::accounts
+
+    let accounts: Vec<Account> = accounts_dsl::accounts
         .select(Account::as_select())
         .load(connection)
         .expect("error loading accounts");
-    p
+
+    Ok(accounts)
 }
 
 #[tauri::command]
@@ -165,7 +167,7 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
             .as_ref()
             .map(|account| account.iban.clone())
             .unwrap_or(None);
-        let ammount: f64 = old_trans.transaction_amount.amount.parse().unwrap();
+        let amount: f64 = old_trans.transaction_amount.amount.parse().unwrap();
         let date = old_trans.booking_date.clone().unwrap_or("".to_string());
 
         Transaction {
@@ -175,7 +177,7 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
             debitor_iban: debitor_iban,
             creditor_name: old_trans.creditor_name.clone(),
             creditor_iban: creditor_iban,
-            ammount: ammount,
+            amount: amount,
             currency: old_trans.transaction_amount.clone().currency,
             date: date,
             remittance_information: old_trans.remittance_information_unstructured.clone(),
@@ -205,6 +207,20 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
     Ok(transactions)
 }
 
+#[tauri::command]
+fn get_transactions() -> Result<Vec<Transaction>, String> {
+    use schema::transactions::dsl as transaction_dsl;
+
+    let connection = &mut database::establish_db_connection();
+
+    let transactions: Vec<Transaction> = transaction_dsl::transactions
+        .select(Transaction::as_select())
+        .load(connection)
+        .expect("error loading transactions");
+
+    Ok(transactions)
+}
+
 #[tokio::main]
 async fn main() {
     tauri::Builder::default()
@@ -222,7 +238,8 @@ async fn main() {
             connect_bank_account_phase_1,
             connect_bank_account_phase_2,
             get_banking_accounts,
-            get_transactions_handler
+            get_transactions_handler,
+            get_transactions
         ])
         .run(tauri::generate_context!())
         .unwrap_or_else(|err| {

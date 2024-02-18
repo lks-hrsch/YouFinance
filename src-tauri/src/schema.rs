@@ -30,8 +30,8 @@ diesel::table! {
 
 diesel::table! {
     transaction_tags (transaction_id, tag_id) {
-        transaction_id -> Nullable<Integer>,
-        tag_id -> Nullable<Integer>,
+        transaction_id -> Integer,
+        tag_id -> Integer,
     }
 }
 
@@ -39,15 +39,15 @@ diesel::table! {
     transactions (id) {
         id -> Integer,
         title -> Text,
-        debitor_name -> Text,
-        debitor_iban -> Text,
-        creditor_name -> Text,
-        creditor_iban -> Text,
-        ammount -> Float,
+        debitor_name -> Nullable<Text>,
+        debitor_iban -> Nullable<Text>,
+        creditor_name -> Nullable<Text>,
+        creditor_iban -> Nullable<Text>,
+        amount -> Double,
         currency -> Text,
-        date -> Timestamp,
+        date -> Text,
         remittance_information -> Nullable<Text>,
-        account_id -> Nullable<Integer>,
+        account_id -> Integer,
     }
 }
 
@@ -56,4 +56,10 @@ diesel::joinable!(transaction_tags -> tags (tag_id));
 diesel::joinable!(transaction_tags -> transactions (transaction_id));
 diesel::joinable!(transactions -> accounts (account_id));
 
-diesel::allow_tables_to_appear_in_same_query!(accounts, providers, tags, transaction_tags, transactions,);
+diesel::allow_tables_to_appear_in_same_query!(
+    accounts,
+    providers,
+    tags,
+    transaction_tags,
+    transactions,
+);

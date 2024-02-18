@@ -50,7 +50,7 @@ export interface Transaction {
   debitor_iban?: string;
   creditor_name?: string;
   creditor_iban?: string;
-  ammount: number;
+  amount: number;
   currency: string;
   date: string;
   remittance_information?: string;

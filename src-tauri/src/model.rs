@@ -1,4 +1,4 @@
-use crate::schema::{accounts, providers, transaction_tags};
+use crate::schema::{accounts, providers, tags, transaction_tags, transactions};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
@@ -62,7 +62,7 @@ pub struct NewAccount {
 }
 
 #[typeshare]
-#[derive(Queryable, Serialize, Deserialize, Debug)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]
 #[diesel(belongs_to(Account, foreign_key = account_id))]
 #[diesel(table_name = transactions)]
 pub struct Transaction {
@@ -72,7 +72,7 @@ pub struct Transaction {
     pub debitor_iban: Option<String>,
     pub creditor_name: Option<String>,
     pub creditor_iban: Option<String>,
-    pub ammount: f64,
+    pub amount: f64,
     pub currency: String,
     pub date: String,
     pub remittance_information: Option<String>,
@@ -80,7 +80,7 @@ pub struct Transaction {
 }
 
 #[typeshare]
-#[derive(Queryable, Serialize, Deserialize, Debug)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = tags)]
 pub struct Tag {
     pub id: i32,
@@ -88,7 +88,7 @@ pub struct Tag {
 }
 
 #[typeshare]
-#[derive(Queryable, Serialize, Deserialize, Debug, Associations)]
+#[derive(Queryable, Selectable, Serialize, Deserialize, Debug, Associations)]
 #[diesel(belongs_to(Transaction, foreign_key = transaction_id))]
 #[diesel(belongs_to(Tag, foreign_key = tag_id))]
 #[diesel(table_name = transaction_tags)]

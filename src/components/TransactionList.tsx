@@ -57,10 +57,10 @@ const TransactionListComponent: React.FC = () => {
               <div>{transaction.creditor_iban}</div>
             </div>
             <div className="flex justify-end gap-2 w-1/4">
-              {transaction.ammount < 0 ? (
-                <div className="text-red-500">{transaction.ammount}</div>
+              {transaction.amount < 0 ? (
+                <div className="text-red-500">{transaction.amount}</div>
               ) : (
-                <div className="text-green-500">+{transaction.ammount}</div>
+                <div className="text-green-500">+{transaction.amount}</div>
               )}
               <div>{transaction.currency}</div>
             </div>
