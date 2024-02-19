@@ -34,6 +34,27 @@ To run the project in a development environment, execute the following command:
 yarn tauri dev
 ```
 
+To apply diesel migrations, run the following command:
+
+```bash
+cd src-tauri
+diesel migration run --database-url <path/to/database>
+```
+
+to generate a new migration, run the following command:
+
+```bash
+cd src-tauri
+diesel migration generate <migration_name>
+```
+
+To reapply the migrations, run the following command:
+
+```bash
+cd src-tauri
+diesel migration redo --database-url <path/to/database> --number <depth>
+```
+
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)

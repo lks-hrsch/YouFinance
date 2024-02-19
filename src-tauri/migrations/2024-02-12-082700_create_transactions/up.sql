@@ -12,5 +12,6 @@ CREATE TABLE transactions (
   remittance_information TEXT,
   account_id INTEGER NOT NULL,
 
-  FOREIGN KEY (account_id) REFERENCES accounts(id)
+  FOREIGN KEY (account_id) REFERENCES accounts(id),
+  CONSTRAINT unique_transactions_constraint UNIQUE(date, amount, debitor_iban, creditor_iban, account_id)
 )

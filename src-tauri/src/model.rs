@@ -80,6 +80,22 @@ pub struct Transaction {
 }
 
 #[typeshare]
+#[derive(Insertable, AsChangeset)]
+#[diesel(table_name = transactions)]
+pub struct NewTransaction {
+    pub title: String,
+    pub debitor_name: Option<String>,
+    pub debitor_iban: Option<String>,
+    pub creditor_name: Option<String>,
+    pub creditor_iban: Option<String>,
+    pub amount: f64,
+    pub currency: String,
+    pub date: String,
+    pub remittance_information: Option<String>,
+    pub account_id: i32,
+}
+
+#[typeshare]
 #[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]
 #[diesel(table_name = tags)]
 pub struct Tag {

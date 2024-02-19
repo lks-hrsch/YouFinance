@@ -57,6 +57,19 @@ export interface Transaction {
   account_id: number;
 }
 
+export interface NewTransaction {
+  title: string;
+  debitor_name?: string;
+  debitor_iban?: string;
+  creditor_name?: string;
+  creditor_iban?: string;
+  amount: number;
+  currency: string;
+  date: string;
+  remittance_information?: string;
+  account_id: number;
+}
+
 export interface Tag {
   id: number;
   title: string;

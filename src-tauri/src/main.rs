@@ -9,6 +9,7 @@ mod schema;
 use crate::banking::trait_banking_api::BankingApi;
 use banking::providers::BankingProviders;
 use diesel::associations::HasTable;
+use diesel::upsert::*;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 use log::error;
 use model::*;
@@ -140,9 +141,10 @@ fn get_banking_accounts() -> Result<Vec<Account>, String> {
 }
 
 #[tauri::command]
-async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
+async fn get_transactions_handler() -> Result<(), String> {
     use schema::accounts::dsl as accounts_dsl;
     use schema::providers::dsl as providers_dsl;
+    use schema::transactions::dsl as transactions_dsl;
 
     let connection = &mut database::establish_db_connection();
     let provider: Provider = providers_dsl::providers
@@ -160,7 +162,7 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
     fn transform_transaction(
         old_trans: &banking::provider_gocardless_structs::Transaction,
         account_id: i32,
-    ) -> Transaction {
+    ) -> NewTransaction {
         let debitor_iban = old_trans.debtor_account.as_ref().map(|account| account.iban.clone());
         let creditor_iban = old_trans
             .creditor_account
@@ -170,8 +172,7 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
         let amount: f64 = old_trans.transaction_amount.amount.parse().unwrap();
         let date = old_trans.booking_date.clone().unwrap_or("".to_string());
 
-        Transaction {
-            id: 0,
+        NewTransaction {
             title: "".to_string(),
             debitor_name: old_trans.debtor_name.clone(),
             debitor_iban: debitor_iban,
@@ -201,10 +202,15 @@ async fn get_transactions_handler() -> Result<Vec<Transaction>, String> {
         );
     }
 
-    // Sort the transactions by date
-    transactions.sort_by(|a, b| b.date.cmp(&a.date));
+    for transaction in &transactions {
+        diesel::insert_into(transactions_dsl::transactions::table())
+            .values(transaction)
+            .on_conflict_do_nothing()
+            .execute(connection)
+            .expect("Error inserting transactions");
+    }
 
-    Ok(transactions)
+    Ok(())
 }
 
 #[tauri::command]
@@ -213,10 +219,13 @@ fn get_transactions() -> Result<Vec<Transaction>, String> {
 
     let connection = &mut database::establish_db_connection();
 
-    let transactions: Vec<Transaction> = transaction_dsl::transactions
+    let mut transactions: Vec<Transaction> = transaction_dsl::transactions
         .select(Transaction::as_select())
         .load(connection)
         .expect("error loading transactions");
+
+    // Sort the transactions by date
+    transactions.sort_by(|a, b| b.date.cmp(&a.date));
 
     Ok(transactions)
 }

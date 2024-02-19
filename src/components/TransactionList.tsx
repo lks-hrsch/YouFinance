@@ -12,8 +12,7 @@ const TransactionListComponent: React.FC = () => {
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        // Replace 'get_providers' with your actual Tauri command
-        invoke("get_transactions_handler").then((rustTransactions: unknown) => {
+        invoke("get_transactions").then((rustTransactions: unknown) => {
           const transactions = rustTransactions as Transaction[];
           setTransactions(transactions);
         });
