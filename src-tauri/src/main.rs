@@ -9,7 +9,6 @@ mod schema;
 use crate::banking::trait_banking_api::BankingApi;
 use banking::providers::BankingProviders;
 use diesel::associations::HasTable;
-use diesel::upsert::*;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 use log::error;
 use model::*;
