@@ -1,5 +1,8 @@
 extern crate reqwest;
 
+use log::debug;
+use log::error;
+
 use super::apierror::*;
 use super::provider_gocardless_structs::*;
 use super::trait_banking_api::BankingApi;
@@ -110,6 +113,34 @@ impl BankingApi for GoCardless {
         let bank_connection: BankConnection = serde_json::from_str(&body)?;
 
         Ok(bank_connection)
+    }
+
+    async fn disconnect_bank(&self, bank_connection_id: &str) -> Result<(), ApiError> {
+        let client = reqwest::Client::new();
+        let mut headers = reqwest::header::HeaderMap::new();
+        // headers.insert("accept", reqwest::header::HeaderValue::from_static("application/json"));
+        self.add_authorization_header(&mut headers)?;
+
+        let res = client
+            .delete(&format!(
+                "{}requisitions/{}/",
+                self.base_url.to_owned(),
+                bank_connection_id
+            ))
+            .headers(headers)
+            .send()
+            .await?;
+
+        if res.status().is_success() {
+            // log the body
+            let body = res.text().await?;
+            debug!("Disconnect bank: {}", body);
+            Ok(())
+        } else {
+            let body = res.text().await?;
+            error!("Failed to disconnect bank: {}", body);
+            Err(ApiError::Custom(format!("Failed to disconnect bank: {}", body)))
+        }
     }
 
     async fn get_bank_accounts(&self, bank_connection_id: &str) -> Result<BankAccounts, ApiError> {

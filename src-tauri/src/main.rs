@@ -126,6 +126,19 @@ async fn connect_bank_account_phase_2(
 }
 
 #[tauri::command]
+async fn disconnect_bank_account(provider_title: String, bank_connection_id: String) -> Result<(), String> {
+    let provider = BankingProviders::from_string(&provider_title).unwrap();
+    let gocardless = provider.connect_provider().await.unwrap();
+
+    gocardless
+        .disconnect_bank(&bank_connection_id)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 fn get_banking_accounts() -> Result<Vec<Account>, String> {
     use schema::accounts::dsl as accounts_dsl;
 
@@ -245,6 +258,7 @@ async fn main() {
             get_banks_by_country_handler,
             connect_bank_account_phase_1,
             connect_bank_account_phase_2,
+            disconnect_bank_account,
             get_banking_accounts,
             get_transactions_handler,
             get_transactions

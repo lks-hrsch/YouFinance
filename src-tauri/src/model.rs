@@ -45,7 +45,7 @@ pub struct Account {
     pub provider_id: i32,
     pub title: String,
     pub institution_id: Option<String>,
-    pub bank_connection_id: Option<String>,
+    pub bank_connection_id: String,
     pub account_id: Option<String>,
     pub iban: Option<String>,
 }

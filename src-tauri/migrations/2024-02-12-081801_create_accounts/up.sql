@@ -4,7 +4,7 @@ CREATE TABLE accounts (
     provider_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     institution_id TEXT,
-    bank_connection_id TEXT,
+    bank_connection_id TEXT NOT NULL,
     account_id TEXT,
     iban TEXT,
 

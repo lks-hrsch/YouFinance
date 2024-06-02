@@ -30,7 +30,7 @@ export interface Account {
   provider_id: number;
   title: string;
   institution_id?: string;
-  bank_connection_id?: string;
+  bank_connection_id: string;
   account_id?: string;
   iban?: string;
 }
