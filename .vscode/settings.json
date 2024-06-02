@@ -1,5 +1,7 @@
 {
-  "rust-analyzer.linkedProjects": [".\\src-tauri\\Cargo.toml"],
+  "rust-analyzer.linkedProjects": [
+    "./src-tauri/Cargo.toml"
+  ],
   "rust-analyzer.checkOnSave.command": "clippy",
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.rustfmt.enableRangeFormatting": true,

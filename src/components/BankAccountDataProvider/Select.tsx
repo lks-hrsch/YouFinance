@@ -46,6 +46,8 @@ const BankAccountDataProviderSelect: React.FC<BankingProviderSelectProps> = ({
         label="Select a provider"
         onChange={handleChange}
         placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         {providers.map((provider, index) => (
           <Option key={index} value={provider}>

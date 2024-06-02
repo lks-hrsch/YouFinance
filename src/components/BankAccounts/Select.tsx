@@ -55,6 +55,8 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
         label="Select a bank"
         onChange={handleChange}
         placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         {banks.map((provider, index) => (
           <Option key={index} value={provider.id}>

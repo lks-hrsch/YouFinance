@@ -55,6 +55,8 @@ const BankAccounts: React.FC = () => {
         className="flex items-center gap-3"
         onClick={handleConnectBank}
         placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         <PlusIcon />
         Connect bank
@@ -63,6 +65,8 @@ const BankAccounts: React.FC = () => {
         className="flex items-center gap-3"
         onClick={handleAddAccounts}
         placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         <PlusIcon />
         Add accounts

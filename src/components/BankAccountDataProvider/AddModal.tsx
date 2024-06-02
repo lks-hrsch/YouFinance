@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, FormEvent } from "react";
 import BankAccountDataProviderSelect from "./Select";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -14,12 +14,12 @@ const BankAccountDataProviderAddModal: React.FC<
   const [sid, setSid] = useState<string>("");
   const [skey, setSkey] = useState<string>("");
 
-  const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    setState: React.Dispatch<React.SetStateAction<string>>,
-  ) => {
-    setState(event.target.value);
-  };
+  // const handleInputChange = (
+  //   event: ChangeEvent<HTMLInputElement>,
+  //   setState: React.Dispatch<React.SetStateAction<string>>,
+  // ) => {
+  //   setState(event.target.value);
+  // };
 
   const handleProviderSelect = (provider: string) => {
     setName(provider);

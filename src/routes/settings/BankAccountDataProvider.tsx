@@ -13,7 +13,12 @@ const BankAccountDataProvider: React.FC = () => {
   return (
     <>
       <BankAccountDataProviderList />
-      <Button onClick={openModal} placeholder={undefined}>
+      <Button
+        onClick={openModal}
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         Add New Provider
       </Button>
       <BankAccountDataProviderAddModal

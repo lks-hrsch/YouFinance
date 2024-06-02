@@ -54,15 +54,25 @@ const BankAccountsList: React.FC = () => {
           key={bankConnectionId}
           className="h-full w-full overflow-scroll mb-4"
           placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           <div className="flex justify-between items-center p-1">
-            <Typography variant="h6" color="blue-gray" placeholder={undefined}>
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
               Bank Connection ID: {bankConnectionId}
             </Typography>
             <Button
               color="red"
               onClick={() => handleDelete(bankConnectionId)}
               placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               <TrashIcon className="w-4 h-4" />
             </Button>
@@ -80,6 +90,8 @@ const BankAccountsList: React.FC = () => {
                       color="blue-gray"
                       className="font-normal leading-none opacity-70"
                       placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     >
                       {head}
                     </Typography>

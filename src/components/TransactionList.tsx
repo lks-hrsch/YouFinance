@@ -27,25 +27,57 @@ const TransactionListComponent: React.FC = () => {
   return (
     <>
       <div className="flex justify-between">
-        <Typography className="w-1/4" variant="h4" placeholder={undefined}>
+        <Typography
+          className="w-1/4"
+          variant="h4"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           Booking Date
         </Typography>
-        <Typography className="w-1/4" variant="h4" placeholder={undefined}>
+        <Typography
+          className="w-1/4"
+          variant="h4"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           Debtor Name
         </Typography>
-        <Typography className="w-1/4" variant="h4" placeholder={undefined}>
+        <Typography
+          className="w-1/4"
+          variant="h4"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           Creditor Name
         </Typography>
-        <Typography className="w-1/4" variant="h4" placeholder={undefined}>
+        <Typography
+          className="w-1/4"
+          variant="h4"
+          placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
+        >
           Ammount
         </Typography>
       </div>
 
-      <List placeholder={undefined}>
+      <List
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         {/* Divide the list in 4 tiles */}
 
         {transactions.map((transaction) => (
-          <ListItem placeholder={undefined}>
+          <ListItem
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
             <div className="w-1/4">{transaction.date}</div>
             <div className="flex-row justify-center w-1/4">
               <div>{transaction.debitor_name}</div>

@@ -34,7 +34,12 @@ const BankAccountDataProviderList: React.FC = () => {
 
   return (
     <div>
-      <Card className="h-full w-full overflow-scroll" placeholder={undefined}>
+      <Card
+        className="h-full w-full overflow-scroll"
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
@@ -48,6 +53,8 @@ const BankAccountDataProviderList: React.FC = () => {
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                     placeholder={undefined}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                   >
                     {head}
                   </Typography>
@@ -70,6 +77,8 @@ const BankAccountDataProviderList: React.FC = () => {
                       color="blue-gray"
                       className="font-normal"
                       placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     >
                       {provider.id}
                     </Typography>
@@ -80,6 +89,8 @@ const BankAccountDataProviderList: React.FC = () => {
                       color="blue-gray"
                       className="font-normal"
                       placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     >
                       {provider.title}
                     </Typography>
@@ -90,6 +101,8 @@ const BankAccountDataProviderList: React.FC = () => {
                       color="blue-gray"
                       className="font-normal"
                       placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     >
                       {provider.secret_id}
                     </Typography>
@@ -100,6 +113,8 @@ const BankAccountDataProviderList: React.FC = () => {
                       color="blue-gray"
                       className="font-normal"
                       placeholder={undefined}
+                      onPointerEnterCapture={undefined}
+                      onPointerLeaveCapture={undefined}
                     >
                       {provider.secret_key}
                     </Typography>

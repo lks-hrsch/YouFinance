@@ -23,7 +23,12 @@ const Menu: React.FC = () => {
 
   return (
     <>
-      <Navbar className="mx-auto mb-4" placeholder={undefined}>
+      <Navbar
+        className="mx-auto mb-4"
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         <div className="flex items-center justify-between text-blue-gray-900">
           <Typography
             as="a"
@@ -31,6 +36,8 @@ const Menu: React.FC = () => {
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
             placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             YouFinance
           </Typography>
@@ -43,6 +50,8 @@ const Menu: React.FC = () => {
             className="lg:hidden"
             onClick={() => setOpenNav(!openNav)}
             placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             {openNav ? (
               <XMarkIcon className="h-6 w-6" strokeWidth={2} />

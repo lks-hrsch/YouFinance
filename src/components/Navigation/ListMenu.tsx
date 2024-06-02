@@ -22,6 +22,8 @@ const ListMenu: React.FC = () => {
     <List
       className="mt-4 mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1"
       placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
     >
       <Typography
         as="a"
@@ -30,10 +32,14 @@ const ListMenu: React.FC = () => {
         color="blue-gray"
         className="font-medium"
         placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
       >
         <ListItem
           className="flex items-center gap-2 py-2 pr-4"
           placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           Home
         </ListItem>

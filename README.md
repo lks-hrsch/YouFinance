@@ -32,6 +32,7 @@ To run the project in a development environment, execute the following command:
 
 ```bash
 yarn tauri dev
+WEBKIT_DISABLE_COMPOSITING_MODE=1 yarn tauri dev  # needed on linux
 ```
 
 To apply diesel migrations, run the following command:

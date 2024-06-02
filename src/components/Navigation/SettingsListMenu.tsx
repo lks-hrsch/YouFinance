@@ -35,6 +35,8 @@ const SettingsListMenu: React.FC = () => {
         <MenuItem
           className="flex items-center gap-3 rounded-lg"
           placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           <div>
             <Typography
@@ -42,6 +44,8 @@ const SettingsListMenu: React.FC = () => {
               color="blue-gray"
               className="flex items-center text-sm font-bold"
               placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               {title}
             </Typography>
@@ -49,6 +53,8 @@ const SettingsListMenu: React.FC = () => {
               variant="paragraph"
               className="text-xs !font-medium text-blue-gray-500"
               placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               {description}
             </Typography>
@@ -72,12 +78,16 @@ const SettingsListMenu: React.FC = () => {
             variant="small"
             className="font-medium"
             placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
           >
             <ListItem
               className="flex items-center gap-2 py-2 pr-4 font-medium text-gray-900"
               selected={isMenuOpen || isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((cur) => !cur)}
               placeholder={undefined}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
             >
               Settings
               <ChevronDownIcon
@@ -98,6 +108,8 @@ const SettingsListMenu: React.FC = () => {
         <MenuList
           className="hidden max-w-screen-xl rounded-xl lg:block"
           placeholder={undefined}
+          onPointerEnterCapture={undefined}
+          onPointerLeaveCapture={undefined}
         >
           <ul className="grid grid-cols-3 gap-y-2 outline-none outline-0">
             {renderItems}
