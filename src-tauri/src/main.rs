@@ -80,10 +80,12 @@ async fn connect_bank_account_phase_1(
         .await
         .map_err(|e| e.to_string())?;
 
-    Ok(BankConnectionInfo {
+    let bank_connection_info = BankConnectionInfo {
         id: connect_bank_result.id.unwrap(),
         link: connect_bank_result.link.unwrap(),
-    })
+    };
+
+    Ok(bank_connection_info)
 }
 
 #[tauri::command]

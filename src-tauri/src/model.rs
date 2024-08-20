@@ -30,7 +30,7 @@ pub struct BankInfo {
 }
 
 #[typeshare]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct BankConnectionInfo {
     pub id: String,
     pub link: String,
