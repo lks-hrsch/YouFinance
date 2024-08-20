@@ -8,6 +8,7 @@ import { BankConnectionInfo } from "../../models/typeshare_definitions";
 import { Button } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/api/shell";
 
 const BankAccounts: React.FC = () => {
   const [providerName, setProviderName] = useState<string>("");
@@ -29,7 +30,7 @@ const BankAccounts: React.FC = () => {
     }).then((rustBankConnectionInfo: unknown) => {
       const bankConnectionInfo = rustBankConnectionInfo as BankConnectionInfo;
       console.log(bankConnectionInfo.link);
-      window.open(bankConnectionInfo.link, "_blank");
+      open(bankConnectionInfo.link);
       setRequisitionID(bankConnectionInfo.id);
     });
   };
