@@ -7,10 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# other files
 node_modules
 dist
 dist-ssr
 *.local
+*.sqlite
 
 # Editor directories and files
 .idea
