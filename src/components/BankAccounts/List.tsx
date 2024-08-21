@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { Account } from "../../models/typeshare_definitions";

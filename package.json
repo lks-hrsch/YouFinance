@@ -10,26 +10,27 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@heroicons/react": "^2.1.1",
+    "@heroicons/react": "^2.1.5",
     "@material-tailwind/react": "^2.1.9",
-    "@tauri-apps/api": "^1.5.2",
+    "@tauri-apps/api": "^2.0.0-rc.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.0",
+    "react-router-dom": "^6.26.1",
     "sort-by": "^1.2.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.8",
-    "@types/react": "^18.2.15",
+    "@tauri-apps/cli": "^2.0.0-rc.6",
+    "@tauri-apps/plugin-shell": "^2.0.0-rc.0",
+    "@types/react": "^18.3.4",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.33",
-    "prettier": "3.2.5",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.0.2",
-    "vite": "^5.0.0"
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "prettier": "3.3.3",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
   }
 }

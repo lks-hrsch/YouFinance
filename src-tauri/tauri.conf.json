@@ -2,30 +2,19 @@
   "build": {
     "beforeDevCommand": "yarn dev",
     "beforeBuildCommand": "yarn build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "you-finance",
-    "version": "0.0.0"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": []
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "de.you-finance",
-      "icon": []
-    },
-    "security": {
-      "csp": null
-    },
+  "productName": "you-finance",
+  "version": "0.0.0",
+  "identifier": "de.you-finance",
+  "plugins": {},
+  "app": {
     "windows": [
       {
         "fullscreen": false,
@@ -34,6 +23,9 @@
         "width": 800,
         "height": 600
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

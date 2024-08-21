@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from "react";
 import BankAccountDataProviderSelect from "./Select";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 interface BankAccountDataProviderAddModalProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import React from "react";
 import SettingsListMenu from "./SettingsListMenu";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 

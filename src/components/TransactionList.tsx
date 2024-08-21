@@ -1,6 +1,6 @@
 // TransactionListComponent.tsx
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import { Transaction } from "../models/typeshare_definitions";
 

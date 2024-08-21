@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Provider } from "../../models/typeshare_definitions";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { Card, Typography } from "@material-tailwind/react";
 
 const TABLE_HEAD = ["ID", "Provider", "Secret ID", "Secret Key"];
