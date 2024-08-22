@@ -1,18 +1,10 @@
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 mod banking;
 mod database;
 mod model;
 mod schema;
 
 use banking::providers::BankingProviders;
-use diesel::{
-    associations::HasTable,
-    ExpressionMethods,
-    QueryDsl,
-    RunQueryDsl,
-    SelectableHelper,
-};
-use log::error;
+use diesel::{associations::HasTable, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 use model::*;
 
 use crate::banking::trait_banking_api::BankingApi;
@@ -98,10 +90,7 @@ async fn connect_bank_account_phase_2(
     institution_id: String,
     requisition_id: String,
 ) -> Result<(), String> {
-    use schema::{
-        accounts::dsl as accounts_dsl,
-        providers::dsl as providers_dsl,
-    };
+    use schema::{accounts::dsl as accounts_dsl, providers::dsl as providers_dsl};
 
     let provider = BankingProviders::from_string(&provider_title).unwrap();
     let gocardless = provider.connect_provider().await.unwrap();
@@ -163,9 +152,7 @@ fn get_banking_accounts() -> Result<Vec<Account>, String> {
 #[tauri::command]
 async fn get_transactions_handler() -> Result<(), String> {
     use schema::{
-        accounts::dsl as accounts_dsl,
-        providers::dsl as providers_dsl,
-        transactions::dsl as transactions_dsl,
+        accounts::dsl as accounts_dsl, providers::dsl as providers_dsl, transactions::dsl as transactions_dsl,
     };
 
     let connection = &mut database::establish_db_connection();
@@ -253,29 +240,46 @@ fn get_transactions() -> Result<Vec<Transaction>, String> {
 }
 
 #[tokio::main]
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub async fn run() {
-    tauri::Builder::default()
-        .setup(|_app| {
-            database::init();
-            Ok(())
-        })
-        // .manage()
-        .plugin(tauri_plugin_log::Builder::default().build())
-        .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![
-            list_possible_banking_providers,
-            get_banking_providers,
-            add_banking_provider,
-            get_banks_by_country_handler,
-            connect_bank_account_phase_1,
-            connect_bank_account_phase_2,
-            disconnect_bank_account,
-            get_banking_accounts,
-            get_transactions_handler,
-            get_transactions
-        ])
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(debug_assertions)]
+    {
+        // https://github.com/crabnebula-dev/devtools
+        let devtools = tauri_plugin_devtools::init(); // initialize the plugin as early as possible
+        builder = builder.plugin(devtools); // then register it with Tauri
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        builder = builder.plugin(tauri_plugin_log::Builder::default().build());
+    }
+
+    builder = builder.plugin(tauri_plugin_shell::init());
+    builder = builder.plugin(tauri_plugin_fs::init());
+
+    builder = builder.setup(|_app| {
+        database::init();
+        Ok(())
+    });
+
+    // builder = builder.manage();
+
+    builder = builder.invoke_handler(tauri::generate_handler![
+        list_possible_banking_providers,
+        get_banking_providers,
+        add_banking_provider,
+        get_banks_by_country_handler,
+        connect_bank_account_phase_1,
+        connect_bank_account_phase_2,
+        disconnect_bank_account,
+        get_banking_accounts,
+        get_transactions_handler,
+        get_transactions
+    ]);
+
+    builder
         .run(tauri::generate_context!())
-        .unwrap_or_else(|err| {
-            error!("Error while running tauri application: {}", err);
-        });
+        .expect("error while running tauri application");
 }
