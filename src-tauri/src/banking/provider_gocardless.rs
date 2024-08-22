@@ -11,14 +11,15 @@ use std::collections::HashMap;
 impl GoCardless {
     // Check if access_token is available
     fn add_authorization_header(&self, headers: &mut reqwest::header::HeaderMap) -> Result<(), ApiError> {
-        if let Some(access_token) = &self.access_token {
-            headers.insert(
-                reqwest::header::AUTHORIZATION,
-                reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
-            );
-            Ok(())
-        } else {
-            Err(ApiError::Custom("Access token not available".into()))
+        match &self.access_token {
+            Some(access_token) => {
+                headers.insert(
+                    reqwest::header::AUTHORIZATION,
+                    reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
+                );
+                Ok(())
+            }
+            None => Err(ApiError::Custom("access token not available".into())),
         }
     }
 }
@@ -32,9 +33,16 @@ impl BankingApi for GoCardless {
             access_token: None,
         };
 
-        this.access_token = Some(this.get_access_token().await?);
-
-        Ok(this)
+        match this.get_access_token().await {
+            Ok(access_token) => {
+                this.access_token = Some(access_token);
+                Ok(this)
+            }
+            Err(e) => {
+                error!("failed to get access token: {}", e);
+                Err(e)
+            }
+        }
     }
 
     async fn get_access_token(&self) -> Result<AccessToken, ApiError> {
@@ -61,8 +69,8 @@ impl BankingApi for GoCardless {
         match serde_json::from_str(&body) {
             Ok(access_token) => Ok(access_token),
             Err(e) => {
-                error!("Failed to parse access token: {}", e);
-                Err(ApiError::Custom(format!("Failed to parse access token: {}", e)))
+                error!("failed to parse access token: {}", e);
+                Err(ApiError::Custom(format!("failed to parse access token: {}", e)))
             }
         }
     }
@@ -87,8 +95,8 @@ impl BankingApi for GoCardless {
         match serde_json::from_str(&body) {
             Ok(banks) => Ok(banks),
             Err(e) => {
-                error!("Failed to parse banks: {}", e);
-                Err(ApiError::Custom(format!("Failed to parse banks: {}", e)))
+                error!("failed to parse banks: {}", e);
+                Err(ApiError::Custom(format!("failed to parse banks: {}", e)))
             }
         }
     }
@@ -121,8 +129,8 @@ impl BankingApi for GoCardless {
         match serde_json::from_str(&body) {
             Ok(bank_connection) => Ok(bank_connection),
             Err(e) => {
-                error!("Failed to parse bank connection: {}", e);
-                Err(ApiError::Custom(format!("Failed to parse bank connection: {}", e)))
+                error!("failed to parse bank connection: {}", e);
+                Err(ApiError::Custom(format!("failed to parse bank connection: {}", e)))
             }
         }
     }
@@ -143,15 +151,15 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        if res.status().is_success() {
+        let status = res.status();
+        let body = res.text().await?;
+        if status.is_success() {
             // log the body
-            let body = res.text().await?;
-            debug!("Disconnect bank: {}", body);
+            debug!("disconnect bank: {}", body);
             Ok(())
         } else {
-            let body = res.text().await?;
-            error!("Failed to disconnect bank: {}", body);
-            Err(ApiError::Custom(format!("Failed to disconnect bank: {}", body)))
+            error!("failed to disconnect bank: {}", body);
+            Err(ApiError::Custom(format!("failed to disconnect bank: {}", body)))
         }
     }
 
@@ -175,8 +183,8 @@ impl BankingApi for GoCardless {
         match serde_json::from_str(&body) {
             Ok(bank_accounts) => Ok(bank_accounts),
             Err(e) => {
-                error!("Failed to parse bank accounts: {}", e);
-                Err(ApiError::Custom(format!("Failed to parse bank accounts: {}", e)))
+                error!("failed to parse bank accounts: {}", e);
+                Err(ApiError::Custom(format!("failed to parse bank accounts: {}", e)))
             }
         }
     }
@@ -201,8 +209,8 @@ impl BankingApi for GoCardless {
         match serde_json::from_str(&body) {
             Ok(bank_transactions) => Ok(bank_transactions),
             Err(e) => {
-                error!("Failed to parse bank transactions: {}", e);
-                Err(ApiError::Custom(format!("Failed to parse bank transactions: {}", e)))
+                error!("failed to parse bank transactions: {}", e);
+                Err(ApiError::Custom(format!("failed to parse bank transactions: {}", e)))
             }
         }
     }
