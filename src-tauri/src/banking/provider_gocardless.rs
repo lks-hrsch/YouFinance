@@ -1,12 +1,17 @@
 extern crate reqwest;
 
-use log::debug;
-use log::error;
-
-use super::apierror::*;
-use super::provider_gocardless_structs::*;
-use super::trait_banking_api::BankingApi;
 use std::collections::HashMap;
+
+use log::{
+    debug,
+    error,
+};
+
+use super::{
+    apierror::*,
+    provider_gocardless_structs::*,
+    trait_banking_api::BankingApi,
+};
 
 impl GoCardless {
     // Check if access_token is available

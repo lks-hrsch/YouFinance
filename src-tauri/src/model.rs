@@ -1,7 +1,17 @@
-use crate::schema::{accounts, providers, tags, transaction_tags, transactions};
 use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 use typeshare::typeshare;
+
+use crate::schema::{
+    accounts,
+    providers,
+    tags,
+    transaction_tags,
+    transactions,
+};
 
 #[typeshare]
 #[derive(Queryable, Selectable, Serialize, Deserialize, Debug)]

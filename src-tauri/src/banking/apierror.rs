@@ -1,6 +1,9 @@
 extern crate reqwest;
 
-use std::{error::Error, fmt};
+use std::{
+    error::Error,
+    fmt,
+};
 
 use reqwest::header::InvalidHeaderValue;
 use serde::Serialize;

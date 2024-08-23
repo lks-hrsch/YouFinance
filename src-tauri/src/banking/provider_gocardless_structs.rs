@@ -1,5 +1,9 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AccessToken {

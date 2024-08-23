@@ -1,5 +1,7 @@
-use super::apierror::*;
-use super::provider_gocardless_structs::*;
+use super::{
+    apierror::*,
+    provider_gocardless_structs::*,
+};
 
 pub trait BankingApi {
     async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError>;

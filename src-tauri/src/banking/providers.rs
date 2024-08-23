@@ -1,5 +1,10 @@
-use diesel::{query_dsl::methods::FilterDsl, ExpressionMethods, RunQueryDsl};
 use std::fmt;
+
+use diesel::{
+    query_dsl::methods::FilterDsl,
+    ExpressionMethods,
+    RunQueryDsl,
+};
 use typeshare::typeshare;
 
 use super::trait_banking_api::BankingApi;
@@ -43,7 +48,7 @@ impl BankingProviders {
                 let connection = &mut crate::database::establish_db_connection();
                 let provider = crate::schema::providers::table
                     .filter(crate::schema::providers::title.eq(self.to_string()))
-                    .first::<crate::Provider>(connection)
+                    .first::<crate::model::Provider>(connection)
                     .map_err(|e| e.to_string())?;
 
                 let sid = provider.secret_id.ok_or("Secret ID not found for provider")?;
