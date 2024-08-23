@@ -3,6 +3,29 @@
 version = 3
 
 [[package]]
+name = "YouFinance"
+version = "0.0.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "diesel_migrations",
+ "dirs",
+ "libsqlite3-sys",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-devtools",
+ "tauri-plugin-fs",
+ "tauri-plugin-log",
+ "tauri-plugin-shell",
+ "tokio",
+ "typeshare",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5744,29 +5767,6 @@ dependencies = [
  "libc",
  "once_cell",
  "pkg-config",
-]
-
-[[package]]
-name = "you-finance"
-version = "0.0.0"
-dependencies = [
- "chrono",
- "diesel",
- "diesel_migrations",
- "dirs",
- "libsqlite3-sys",
- "log",
- "reqwest",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-devtools",
- "tauri-plugin-fs",
- "tauri-plugin-log",
- "tauri-plugin-shell",
- "tokio",
- "typeshare",
 ]
 
 [[package]]

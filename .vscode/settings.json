@@ -1,9 +1,8 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "./src-tauri/Cargo.toml"
-  ],
+  "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"],
   "rust-analyzer.check.command": "clippy",
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
