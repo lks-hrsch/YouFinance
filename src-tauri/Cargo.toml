@@ -22,8 +22,6 @@ tauri-plugin-devtools = { version = "2.0.0-rc" }
 tauri-plugin-log = { version = "2.0.0-rc" }
 tauri-plugin-shell = { version = "2.0.0-rc" }
 tauri-plugin-fs = { version = "2.0.0-rc" }
-
-tokio = { version = "1.39", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 reqwest = { version = "0.12", features = ["json"] }
@@ -34,7 +32,6 @@ diesel = { version = "2.2", features = [
 diesel_migrations = { version = "2.2", features = [
     "sqlite",
 ], git = "https://github.com/diesel-rs/diesel" }
-dirs = "5.0"
 chrono = "0.4"
 typeshare = "1.0"
 log = "0.4"

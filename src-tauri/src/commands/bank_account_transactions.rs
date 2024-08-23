@@ -1,33 +1,37 @@
+use std::sync::Mutex;
+
 use diesel::{
     associations::HasTable,
     QueryDsl,
     RunQueryDsl,
     SelectableHelper,
 };
+use tauri::State;
 
 use crate::{
     banking::{
         providers::BankingProviders,
         trait_banking_api::BankingApi,
     },
+    database::DatabaseState,
     model::*,
 };
 
 #[tauri::command]
-pub async fn get_transactions_handler() -> Result<(), String> {
+pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<DatabaseState>>) -> Result<(), String> {
     use crate::schema::{
         accounts::dsl as accounts_dsl,
         providers::dsl as providers_dsl,
         transactions::dsl as transactions_dsl,
     };
 
-    let connection = &mut crate::database::establish_db_connection();
+    let connection = &mut database_state.lock().unwrap().connection();
     let provider: Provider = providers_dsl::providers
         .first::<Provider>(connection)
         .map_err(|e| e.to_string())?;
 
     let provider = BankingProviders::from_string(&provider.title).unwrap();
-    let gocardless = provider.connect_provider().await?;
+    let gocardless = provider.connect_provider(connection).await?;
 
     let accounts: Vec<Account> = accounts_dsl::accounts
         .select(Account::as_select())
@@ -89,10 +93,10 @@ pub async fn get_transactions_handler() -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn get_transactions() -> Result<Vec<Transaction>, String> {
+pub fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Transaction>, String> {
     use crate::schema::transactions::dsl as transaction_dsl;
 
-    let connection = &mut crate::database::establish_db_connection();
+    let connection = &mut database_state.lock().unwrap().connection();
 
     let mut transactions: Vec<Transaction> = transaction_dsl::transactions
         .select(Transaction::as_select())

@@ -4,7 +4,11 @@ mod database;
 mod model;
 mod schema;
 
+use std::sync::Mutex;
+
 use commands::*;
+use database::DatabaseState;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -25,8 +29,11 @@ pub fn run() {
     builder = builder.plugin(tauri_plugin_shell::init());
     builder = builder.plugin(tauri_plugin_fs::init());
 
-    builder = builder.setup(|_app| {
-        database::init();
+    builder = builder.setup(|app| {
+        let path_database = app.path().app_data_dir()?.join("database.sqlite");
+        let database_state = DatabaseState::new(path_database.clone());
+        database_state.run_migrations();
+        app.manage(Mutex::new(database_state));
         Ok(())
     });
 

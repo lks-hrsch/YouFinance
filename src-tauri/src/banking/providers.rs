@@ -4,6 +4,7 @@ use diesel::{
     query_dsl::methods::FilterDsl,
     ExpressionMethods,
     RunQueryDsl,
+    SqliteConnection,
 };
 use typeshare::typeshare;
 
@@ -42,10 +43,12 @@ impl BankingProviders {
         }
     }
 
-    pub async fn connect_provider(&self) -> Result<crate::banking::provider_gocardless_structs::GoCardless, String> {
+    pub async fn connect_provider(
+        &self,
+        connection: &mut SqliteConnection,
+    ) -> Result<crate::banking::provider_gocardless_structs::GoCardless, String> {
         match self {
             BankingProviders::GoCardless => {
-                let connection = &mut crate::database::establish_db_connection();
                 let provider = crate::schema::providers::table
                     .filter(crate::schema::providers::title.eq(self.to_string()))
                     .first::<crate::model::Provider>(connection)

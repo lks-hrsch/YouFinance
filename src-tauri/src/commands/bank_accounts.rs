@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use diesel::{
     associations::HasTable,
     ExpressionMethods,
@@ -5,19 +7,26 @@ use diesel::{
     RunQueryDsl,
     SelectableHelper,
 };
+use tauri::State;
 
 use crate::{
     banking::{
         providers::BankingProviders,
         trait_banking_api::BankingApi,
     },
+    database::DatabaseState,
     model::*,
 };
 
 #[tauri::command]
-pub async fn get_banks_by_country_handler(provider_title: String, country: String) -> Result<Vec<BankInfo>, String> {
+pub async fn get_banks_by_country_handler<'a>(
+    database_state: State<'a, Mutex<DatabaseState>>,
+    provider_title: String,
+    country: String,
+) -> Result<Vec<BankInfo>, String> {
     let provider = BankingProviders::from_string(&provider_title).unwrap();
-    let gocardless = provider.connect_provider().await?;
+    let connection = &mut database_state.lock().unwrap().connection();
+    let gocardless = provider.connect_provider(connection).await?;
 
     let banks = gocardless
         .get_banks_by_country(&country)
@@ -35,12 +44,14 @@ pub async fn get_banks_by_country_handler(provider_title: String, country: Strin
 }
 
 #[tauri::command]
-pub async fn connect_bank_account_phase_1(
+pub async fn connect_bank_account_phase_1<'a>(
+    database_state: State<'a, Mutex<DatabaseState>>,
     provider_title: String,
     institution_id: String,
 ) -> Result<BankConnectionInfo, String> {
     let provider = BankingProviders::from_string(&provider_title).unwrap();
-    let gocardless = provider.connect_provider().await?;
+    let connection = &mut database_state.lock().unwrap().connection();
+    let gocardless = provider.connect_provider(connection).await?;
 
     let connect_bank_result = gocardless
         .connect_bank("http://localhost", &institution_id)
@@ -56,7 +67,8 @@ pub async fn connect_bank_account_phase_1(
 }
 
 #[tauri::command]
-pub async fn connect_bank_account_phase_2(
+pub async fn connect_bank_account_phase_2<'a>(
+    database_state: State<'a, Mutex<DatabaseState>>,
     provider_title: String,
     institution_id: String,
     requisition_id: String,
@@ -67,9 +79,9 @@ pub async fn connect_bank_account_phase_2(
     };
 
     let provider = BankingProviders::from_string(&provider_title).unwrap();
-    let gocardless = provider.connect_provider().await?;
+    let connection = &mut database_state.lock().unwrap().connection();
+    let gocardless = provider.connect_provider(connection).await?;
 
-    let connection = &mut crate::database::establish_db_connection();
     let provider: Provider = providers_dsl::providers
         .filter(providers_dsl::title.eq(provider_title))
         .first::<Provider>(connection)
@@ -97,9 +109,14 @@ pub async fn connect_bank_account_phase_2(
 }
 
 #[tauri::command]
-pub async fn disconnect_bank_account(provider_title: String, bank_connection_id: String) -> Result<(), String> {
+pub async fn disconnect_bank_account<'a>(
+    database_state: State<'a, Mutex<DatabaseState>>,
+    provider_title: String,
+    bank_connection_id: String,
+) -> Result<(), String> {
     let provider = crate::banking::providers::BankingProviders::from_string(&provider_title).unwrap();
-    let gocardless = provider.connect_provider().await?;
+    let connection = &mut database_state.lock().unwrap().connection();
+    let gocardless = provider.connect_provider(connection).await?;
 
     gocardless
         .disconnect_bank(&bank_connection_id)
@@ -110,10 +127,10 @@ pub async fn disconnect_bank_account(provider_title: String, bank_connection_id:
 }
 
 #[tauri::command]
-pub fn get_banking_accounts() -> Result<Vec<Account>, String> {
+pub fn get_banking_accounts(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Account>, String> {
     use crate::schema::accounts::dsl as accounts_dsl;
 
-    let connection = &mut crate::database::establish_db_connection();
+    let connection = &mut database_state.lock().unwrap().connection();
 
     let accounts: Vec<Account> = accounts_dsl::accounts
         .select(Account::as_select())
