@@ -1,3 +1,6 @@
+#![allow(clippy::redundant_field_names)]
+#![allow(clippy::needless_lifetimes)]
+
 mod banking;
 mod commands;
 mod database;

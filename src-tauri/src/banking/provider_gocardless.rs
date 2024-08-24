@@ -32,9 +32,9 @@ impl GoCardless {
 impl BankingApi for GoCardless {
     async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError> {
         let mut this = GoCardless {
-            base_url: "https://bankaccountdata.gocardless.com/api/v2/".to_string(),
-            secret_id: secret_id.to_string(),
-            secret_key: secret_key.to_string(),
+            base_url: "https://bankaccountdata.gocardless.com/api/v2/".into(),
+            secret_id: secret_id.into(),
+            secret_key: secret_key.into(),
             access_token: None,
         };
 

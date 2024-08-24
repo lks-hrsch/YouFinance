@@ -49,10 +49,10 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
             .map(|account| account.iban.clone())
             .unwrap_or(None);
         let amount: f64 = old_trans.transaction_amount.amount.parse().unwrap();
-        let date = old_trans.booking_date.clone().unwrap_or("".to_string());
+        let date = old_trans.booking_date.clone().unwrap_or("".into());
 
         NewTransaction {
-            title: "".to_string(),
+            title: "".into(),
             debitor_name: old_trans.debtor_name.clone(),
             debitor_iban: debitor_iban,
             creditor_name: old_trans.creditor_name.clone(),
