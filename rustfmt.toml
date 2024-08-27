@@ -1,0 +1,16 @@
+max_width = 120
+tab_spaces = 4
+reorder_imports = true
+imports_layout = "Vertical"
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+ignore = [
+    ".git/",
+    "dist/",
+    "node_modules/",
+    "src/",
+    "src-tauri/target/",
+    "*.toml",
+    "*.json",
+    "*.lock",
+]
