@@ -6,6 +6,7 @@ use diesel::{
     RunQueryDsl,
     SelectableHelper,
 };
+use log::debug;
 use tauri::State;
 
 use crate::{
@@ -19,6 +20,7 @@ use crate::{
 
 #[tauri::command]
 pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<DatabaseState>>) -> Result<(), String> {
+    debug!("commands::bank_account_transactions::get_transactions_handler");
     use crate::schema::{
         accounts::dsl as accounts_dsl,
         providers::dsl as providers_dsl,
@@ -39,7 +41,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
         .expect("error loading accounts");
 
     fn transform_transaction(
-        old_trans: &crate::banking::provider_gocardless_structs::Transaction,
+        old_trans: &crate::banking::providers::gocardless::structs::Transaction,
         account_id: i32,
     ) -> NewTransaction {
         let debitor_iban = old_trans.debtor_account.as_ref().map(|account| account.iban.clone());
@@ -94,6 +96,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
 
 #[tauri::command]
 pub fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Transaction>, String> {
+    debug!("commands::bank_account_transactions::get_transactions");
     use crate::schema::transactions::dsl as transaction_dsl;
 
     let connection = &mut database_state.lock().unwrap().connection();

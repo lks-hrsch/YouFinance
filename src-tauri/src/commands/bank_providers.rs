@@ -6,6 +6,7 @@ use diesel::{
     RunQueryDsl,
     SelectableHelper,
 };
+use log::debug;
 use tauri::State;
 
 use crate::{
@@ -16,11 +17,13 @@ use crate::{
 
 #[tauri::command]
 pub fn list_possible_banking_providers() -> Vec<String> {
+    debug!("commands::bank_providers::list_possible_banking_providers");
     BankingProviders::list_providers()
 }
 
 #[tauri::command]
 pub fn get_banking_providers(database_state: State<'_, Mutex<DatabaseState>>) -> Vec<Provider> {
+    debug!("commands::bank_providers::get_banking_providers");
     use crate::schema::providers::dsl::*;
 
     let connection = &mut database_state.lock().unwrap().connection();
@@ -38,6 +41,7 @@ pub fn add_banking_provider(
     sid: Option<String>,
     skey: Option<String>,
 ) {
+    debug!("commands::bank_providers::add_banking_provider");
     use crate::schema::providers::dsl::*;
 
     let connection = &mut database_state.lock().unwrap().connection();

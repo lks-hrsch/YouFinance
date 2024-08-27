@@ -15,6 +15,7 @@ use diesel_migrations::{
     EmbeddedMigrations,
     MigrationHarness,
 };
+use log::debug;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -35,6 +36,7 @@ impl DatabaseState {
             fs::File::create(&path).unwrap();
         }
 
+        debug!("database path: {:?}", path);
         Self { path }
     }
 

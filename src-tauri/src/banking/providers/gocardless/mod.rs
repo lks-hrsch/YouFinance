@@ -1,3 +1,5 @@
+pub mod structs;
+
 extern crate reqwest;
 
 use std::collections::HashMap;
@@ -6,10 +8,10 @@ use log::{
     debug,
     error,
 };
+use structs::*;
 
-use super::{
+use super::super::{
     apierror::*,
-    provider_gocardless_structs::*,
     trait_banking_api::BankingApi,
 };
 
@@ -97,6 +99,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let body = res.text().await?;
+        debug!("banking::providers::gocardless::get_banks_by_country: {}", body);
         match serde_json::from_str(&body) {
             Ok(banks) => Ok(banks),
             Err(e) => {
@@ -131,6 +134,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let body = res.text().await?;
+        debug!("banking::providers::gocardless::connect_bank: {}", body);
         match serde_json::from_str(&body) {
             Ok(bank_connection) => Ok(bank_connection),
             Err(e) => {
@@ -143,7 +147,7 @@ impl BankingApi for GoCardless {
     async fn disconnect_bank(&self, bank_connection_id: &str) -> Result<(), ApiError> {
         let client = reqwest::Client::new();
         let mut headers = reqwest::header::HeaderMap::new();
-        // headers.insert("accept", reqwest::header::HeaderValue::from_static("application/json"));
+        headers.insert("accept", reqwest::header::HeaderValue::from_static("application/json"));
         self.add_authorization_header(&mut headers)?;
 
         let res = client
@@ -158,6 +162,7 @@ impl BankingApi for GoCardless {
 
         let status = res.status();
         let body = res.text().await?;
+        debug!("banking::providers::gocardless::disconnect_bank: {}", body);
         if status.is_success() {
             // log the body
             debug!("disconnect bank: {}", body);
@@ -185,6 +190,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let body = res.text().await?;
+        debug!("banking::providers::gocardless::get_bank_accounts: {}", body);
         match serde_json::from_str(&body) {
             Ok(bank_accounts) => Ok(bank_accounts),
             Err(e) => {
@@ -211,6 +217,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let body = res.text().await?;
+        debug!("banking::providers::gocardless::get_account_transactions: {}", body);
         match serde_json::from_str(&body) {
             Ok(bank_transactions) => Ok(bank_transactions),
             Err(e) => {

@@ -1,6 +1,6 @@
 use super::{
     apierror::*,
-    provider_gocardless_structs::*,
+    providers::gocardless::structs::*,
 };
 
 pub trait BankingApi {

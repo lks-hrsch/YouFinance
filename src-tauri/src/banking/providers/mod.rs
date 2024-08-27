@@ -1,3 +1,5 @@
+pub mod gocardless;
+
 use std::fmt;
 
 use diesel::{
@@ -46,7 +48,7 @@ impl BankingProviders {
     pub async fn connect_provider(
         &self,
         connection: &mut SqliteConnection,
-    ) -> Result<crate::banking::provider_gocardless_structs::GoCardless, String> {
+    ) -> Result<crate::banking::providers::gocardless::structs::GoCardless, String> {
         match self {
             BankingProviders::GoCardless => {
                 let provider = crate::schema::providers::table
@@ -57,7 +59,7 @@ impl BankingProviders {
                 let sid = provider.secret_id.ok_or("Secret ID not found for provider")?;
                 let skey = provider.secret_key.ok_or("Secret Key not found for provider")?;
 
-                let gocardless = crate::banking::provider_gocardless_structs::GoCardless::new(&sid, &skey)
+                let gocardless = crate::banking::providers::gocardless::structs::GoCardless::new(&sid, &skey)
                     .await
                     .map_err(|e| e.to_string())?;
                 Ok(gocardless)
