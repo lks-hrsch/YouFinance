@@ -18,14 +18,12 @@ pub fn run() {
 
     #[cfg(debug_assertions)]
     {
-        // https://github.com/crabnebula-dev/devtools
-        let devtools = tauri_plugin_devtools::init(); // initialize the plugin as early as possible
-        builder = builder.plugin(devtools); // then register it with Tauri
-    }
-
-    #[cfg(not(debug_assertions))]
-    {
-        builder = builder.plugin(tauri_plugin_log::Builder::default().build());
+        builder = builder.plugin(
+            tauri_plugin_log::Builder::new()
+                .clear_targets()
+                .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
+                .build(),
+        );
     }
 
     builder = builder.plugin(tauri_plugin_shell::init());

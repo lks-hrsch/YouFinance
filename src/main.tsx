@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { attachConsole } from '@tauri-apps/plugin-log';
 
 import { ThemeProvider } from "@material-tailwind/react";
 
@@ -25,6 +26,9 @@ const router = createBrowserRouter([
     element: <BankAccounts />,
   },
 ]);
+
+
+const detach = await attachConsole();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
