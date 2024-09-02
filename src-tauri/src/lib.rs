@@ -1,17 +1,16 @@
 #![allow(clippy::redundant_field_names)]
 #![allow(clippy::needless_lifetimes)]
 
-mod banking;
+pub mod banking;
 mod commands;
 mod database;
 mod model;
 mod schema;
 
-use std::sync::Mutex;
-
 use commands::*;
 use database::DatabaseState;
 use tauri::Manager;
+use tokio::sync::Mutex;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

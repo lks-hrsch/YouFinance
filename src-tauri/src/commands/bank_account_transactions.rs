@@ -1,5 +1,3 @@
-use std::sync::Mutex;
-
 use diesel::{
     associations::HasTable,
     QueryDsl,
@@ -8,6 +6,7 @@ use diesel::{
 };
 use log::debug;
 use tauri::State;
+use tokio::sync::Mutex;
 
 use crate::{
     banking::{
@@ -27,7 +26,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
         transactions::dsl as transactions_dsl,
     };
 
-    let connection = &mut database_state.lock().unwrap().connection();
+    let connection = &mut database_state.lock().await.connection();
     let provider: Provider = providers_dsl::providers
         .first::<Provider>(connection)
         .map_err(|e| e.to_string())?;
@@ -95,11 +94,11 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
 }
 
 #[tauri::command]
-pub fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Transaction>, String> {
+pub async fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Transaction>, String> {
     debug!("commands::bank_account_transactions::get_transactions");
     use crate::schema::transactions::dsl as transaction_dsl;
 
-    let connection = &mut database_state.lock().unwrap().connection();
+    let connection = &mut database_state.lock().await.connection();
 
     let mut transactions: Vec<Transaction> = transaction_dsl::transactions
         .select(Transaction::as_select())
