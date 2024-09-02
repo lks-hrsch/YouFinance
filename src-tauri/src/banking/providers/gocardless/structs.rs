@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use serde::{
     Deserialize,
     Serialize,
@@ -39,12 +37,20 @@ pub struct BankConnection {
     institution_id: String,
     agreement: Option<String>,
     reference: Option<String>,
-    accounts: Option<Vec<HashMap<String, String>>>,
+    accounts: Option<Vec<String>>,
     user_language: Option<String>,
     pub link: Option<String>,
     ssn: Option<String>,
     account_selection: Option<bool>,
     redirect_immediate: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PaginatedBankConnection {
+    pub count: Option<u64>,
+    next: Option<String>,
+    previous: Option<String>,
+    pub results: Vec<BankConnection>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

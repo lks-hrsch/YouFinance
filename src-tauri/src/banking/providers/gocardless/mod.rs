@@ -72,8 +72,7 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        let body = res.text().await?;
-        match serde_json::from_str(&body) {
+        match res.json::<AccessToken>().await {
             Ok(access_token) => Ok(access_token),
             Err(e) => {
                 error!("failed to parse access token: {}", e);
@@ -98,10 +97,11 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        let body = res.text().await?;
-        debug!("banking::providers::gocardless::get_banks_by_country: {}", body);
-        match serde_json::from_str(&body) {
-            Ok(banks) => Ok(banks),
+        match res.json::<Vec<Bank>>().await {
+            Ok(banks) => {
+                debug!("banking::providers::gocardless::get_banks_by_country: {:#?}", banks);
+                Ok(banks)
+            }
             Err(e) => {
                 error!("failed to parse banks: {}", e);
                 Err(ApiError::Custom(format!("failed to parse banks: {}", e)))
@@ -133,10 +133,11 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        let body = res.text().await?;
-        debug!("banking::providers::gocardless::connect_bank: {}", body);
-        match serde_json::from_str(&body) {
-            Ok(bank_connection) => Ok(bank_connection),
+        match res.json::<BankConnection>().await {
+            Ok(bank_connection) => {
+                debug!("banking::providers::gocardless::connect_bank: {:#?}", bank_connection);
+                Ok(bank_connection)
+            }
             Err(e) => {
                 error!("failed to parse bank connection: {}", e);
                 Err(ApiError::Custom(format!("failed to parse bank connection: {}", e)))
@@ -189,10 +190,14 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        let body = res.text().await?;
-        debug!("banking::providers::gocardless::get_bank_accounts: {}", body);
-        match serde_json::from_str(&body) {
-            Ok(bank_accounts) => Ok(bank_accounts),
+        match res.json::<BankAccounts>().await {
+            Ok(bank_accounts) => {
+                debug!(
+                    "banking::providers::gocardless::get_bank_accounts: {:#?}",
+                    bank_accounts
+                );
+                Ok(bank_accounts)
+            }
             Err(e) => {
                 error!("failed to parse bank accounts: {}", e);
                 Err(ApiError::Custom(format!("failed to parse bank accounts: {}", e)))
@@ -216,10 +221,14 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        let body = res.text().await?;
-        debug!("banking::providers::gocardless::get_account_transactions: {}", body);
-        match serde_json::from_str(&body) {
-            Ok(bank_transactions) => Ok(bank_transactions),
+        match res.json().await {
+            Ok(bank_transactions) => {
+                debug!(
+                    "banking::providers::gocardless::get_account_transactions: {:#?}",
+                    bank_transactions
+                );
+                Ok(bank_transactions)
+            }
             Err(e) => {
                 error!("failed to parse bank transactions: {}", e);
                 Err(ApiError::Custom(format!("failed to parse bank transactions: {}", e)))
