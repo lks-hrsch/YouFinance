@@ -6,33 +6,41 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "format": "ultracite format",
+    "lint": "ultracite check",
     "preview": "vite preview",
     "tauri": "tauri"
   },
   "dependencies": {
-    "@heroicons/react": "^2.1.5",
-    "@material-tailwind/react": "^2.1.10",
-    "@tauri-apps/api": "^2.0.2",
-    "@tauri-apps/plugin-fs": "^2.0.0",
-    "@tauri-apps/plugin-log": "^2.0.0",
-    "@tauri-apps/plugin-shell": "^2.0.0",
+    "@heroicons/react": "^2.2.0",
+    "@material-tailwind/react": "2.1.10",
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-fs": "^2.4.4",
+    "@tauri-apps/plugin-log": "^2.7.1",
+    "@tauri-apps/plugin-shell": "^2.3.3",
     "localforage": "^1.10.0",
-    "match-sorter": "^6.3.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.26.2",
+    "match-sorter": "^8.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router-dom": "^7.9.5",
     "sort-by": "^1.2.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.2",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.3.2",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "prettier": "3.3.3",
-    "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.8"
+    "@biomejs/biome": "2.3.4",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@tauri-apps/cli": "^2.9.3",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@vitejs/plugin-react": "^5.1.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3",
+    "ultracite": "6.3.2",
+    "vite": "^7.2.2"
+  },
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
