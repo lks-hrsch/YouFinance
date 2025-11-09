@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
-
-import { Card, Typography, Button } from "@material-tailwind/react";
-import { Account } from "../../models/typeshare_definitions";
-
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { Button, Card, Typography } from "@material-tailwind/react";
+import { invoke } from "@tauri-apps/api/core";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { Account } from "../../models/typeshare_definitions";
 
 const TABLE_HEAD = ["ID", "Title", "Institution ID", "Account ID", "IBAN"];
 
@@ -24,7 +23,7 @@ const BankAccountsList: React.FC = () => {
                 acc[account.bank_connection_id] || []).push(account);
               return acc;
             },
-            {} as Record<string, Account[]>,
+            {} as Record<string, Account[]>
           );
           setGroupedAccounts(grouped);
         });
@@ -43,7 +42,7 @@ const BankAccountsList: React.FC = () => {
     // After deletion, update your state to reflect the changes
     await invoke("disconnect_bank_account", {
       providerTitle: "GoCardless",
-      bankConnectionId: bankConnectionId,
+      bankConnectionId,
     });
   };
 
@@ -51,30 +50,30 @@ const BankAccountsList: React.FC = () => {
     <>
       {Object.entries(groupedAccounts).map(([bankConnectionId, accounts]) => (
         <Card
+          className="mb-4 h-full w-full overflow-scroll"
           key={bankConnectionId}
-          className="h-full w-full overflow-scroll mb-4"
-          placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
+          placeholder={undefined}
         >
-          <div className="flex justify-between items-center p-1">
+          <div className="flex items-center justify-between p-1">
             <Typography
-              variant="h6"
               color="blue-gray"
-              placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              placeholder={undefined}
+              variant="h6"
             >
               Bank Connection ID: {bankConnectionId}
             </Typography>
             <Button
               color="red"
               onClick={() => handleDelete(bankConnectionId)}
-              placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              placeholder={undefined}
             >
-              <TrashIcon className="w-4 h-4" />
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
           <table className="w-full min-w-max table-auto text-left">
@@ -82,16 +81,16 @@ const BankAccountsList: React.FC = () => {
               <tr>
                 {TABLE_HEAD.map((head) => (
                   <th
+                    className="border-blue-gray-100 border-b bg-blue-gray-50 p-4"
                     key={head}
-                    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                   >
                     <Typography
-                      variant="small"
-                      color="blue-gray"
                       className="font-normal leading-none opacity-70"
-                      placeholder={undefined}
+                      color="blue-gray"
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
+                      placeholder={undefined}
+                      variant="small"
                     >
                       {head}
                     </Typography>

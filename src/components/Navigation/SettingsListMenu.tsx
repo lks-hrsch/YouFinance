@@ -1,16 +1,15 @@
-import React from "react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import {
   Collapse,
-  Typography,
   ListItem,
   Menu,
   MenuHandler,
-  MenuList,
   MenuItem,
+  MenuList,
+  Typography,
 } from "@material-tailwind/react";
-
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import React from "react";
 
 const navListMenuItems = [
   {
@@ -34,82 +33,82 @@ const SettingsListMenu: React.FC = () => {
       <a href={href} key={key}>
         <MenuItem
           className="flex items-center gap-3 rounded-lg"
-          placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
+          placeholder={undefined}
         >
           <div>
             <Typography
-              variant="h6"
+              className="flex items-center font-bold text-sm"
               color="blue-gray"
-              className="flex items-center text-sm font-bold"
-              placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              placeholder={undefined}
+              variant="h6"
             >
               {title}
             </Typography>
             <Typography
-              variant="paragraph"
-              className="text-xs !font-medium text-blue-gray-500"
-              placeholder={undefined}
+              className="!font-medium text-blue-gray-500 text-xs"
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              placeholder={undefined}
+              variant="paragraph"
             >
               {description}
             </Typography>
           </div>
         </MenuItem>
       </a>
-    ),
+    )
   );
 
   return (
     <React.Fragment>
       <Menu
-        open={isMenuOpen}
         handler={setIsMenuOpen}
         offset={{ mainAxis: 20 }}
+        open={isMenuOpen}
         placement="bottom"
       >
         <MenuHandler>
           <Typography
             as="div"
-            variant="small"
             className="font-medium"
-            placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            placeholder={undefined}
+            variant="small"
           >
             <ListItem
               className="flex items-center gap-2 py-2 pr-4 font-medium text-gray-900"
-              selected={isMenuOpen || isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-              placeholder={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
+              placeholder={undefined}
+              selected={isMenuOpen || isMobileMenuOpen}
             >
               Settings
               <ChevronDownIcon
-                strokeWidth={2.5}
                 className={`hidden h-3 w-3 transition-transform lg:block ${
                   isMenuOpen ? "rotate-180" : ""
                 }`}
+                strokeWidth={2.5}
               />
               <ChevronDownIcon
-                strokeWidth={2.5}
                 className={`block h-3 w-3 transition-transform lg:hidden ${
                   isMobileMenuOpen ? "rotate-180" : ""
                 }`}
+                strokeWidth={2.5}
               />
             </ListItem>
           </Typography>
         </MenuHandler>
         <MenuList
           className="hidden max-w-screen-xl rounded-xl lg:block"
-          placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
+          placeholder={undefined}
         >
           <ul className="grid grid-cols-3 gap-y-2 outline-none outline-0">
             {renderItems}

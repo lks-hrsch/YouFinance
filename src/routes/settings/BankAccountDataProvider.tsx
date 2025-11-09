@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { Button } from "@material-tailwind/react";
+import type React from "react";
+import { useState } from "react";
 import BankAccountDataProviderAddModal from "../../components/BankAccountDataProvider/AddModal";
 import BankAccountDataProviderList from "../../components/BankAccountDataProvider/List";
-
-import { Button } from "@material-tailwind/react";
 
 const BankAccountDataProvider: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -15,15 +15,15 @@ const BankAccountDataProvider: React.FC = () => {
       <BankAccountDataProviderList />
       <Button
         onClick={openModal}
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         Add New Provider
       </Button>
       <BankAccountDataProviderAddModal
-        isOpen={isModalOpen}
         closeModal={closeModal}
+        isOpen={isModalOpen}
       />
     </>
   );

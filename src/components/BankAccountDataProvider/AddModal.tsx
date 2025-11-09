@@ -1,6 +1,7 @@
-import React, { useState, FormEvent } from "react";
-import BankAccountDataProviderSelect from "./Select";
 import { invoke } from "@tauri-apps/api/core";
+import type React from "react";
+import { type FormEvent, useState } from "react";
+import BankAccountDataProviderSelect from "./Select";
 
 interface BankAccountDataProviderAddModalProps {
   isOpen: boolean;
@@ -29,9 +30,9 @@ const BankAccountDataProviderAddModal: React.FC<
     event.preventDefault();
     try {
       await invoke("add_banking_provider", {
-        name: name,
-        sid: sid,
-        skey: skey,
+        name,
+        sid,
+        skey,
       });
     } catch (error) {
       console.error("Failed to add provider:", error);
@@ -42,13 +43,13 @@ const BankAccountDataProviderAddModal: React.FC<
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-smoke-light flex">
-      <div className="relative p-8 bg-white w-full max-w-md m-auto flex-col flex rounded-lg">
+    <div className="fixed inset-0 z-50 flex overflow-auto bg-smoke-light">
+      <div className="relative m-auto flex w-full max-w-md flex-col rounded-lg bg-white p-8">
         <span className="absolute top-0 right-0 p-4" onClick={closeModal}>
           <button>[Close]</button>
         </span>
         <h2>Add New Provider</h2>
-        <form onSubmit={handleSubmit} className="mt-4">
+        <form className="mt-4" onSubmit={handleSubmit}>
           <div>
             <label>Name</label>
             <BankAccountDataProviderSelect
@@ -58,24 +59,24 @@ const BankAccountDataProviderAddModal: React.FC<
           <div className="mt-4">
             <label>Secret ID (Optional)</label>
             <input
+              className="mt-1 w-full rounded border border-gray-300 p-2"
+              onChange={(e) => setSid(e.target.value)}
               type="text"
               value={sid}
-              onChange={(e) => setSid(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
             />
           </div>
           <div className="mt-4">
             <label>Secret Key (Optional)</label>
             <input
+              className="mt-1 w-full rounded border border-gray-300 p-2"
+              onChange={(e) => setSkey(e.target.value)}
               type="text"
               value={skey}
-              onChange={(e) => setSkey(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
             />
           </div>
           <button
+            className="mt-4 rounded bg-blue-500 p-2 text-white"
             type="submit"
-            className="mt-4 bg-blue-500 text-white p-2 rounded"
           >
             Add Provider
           </button>

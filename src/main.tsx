@@ -1,16 +1,13 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { attachConsole } from '@tauri-apps/plugin-log';
 
 import { ThemeProvider } from "@material-tailwind/react";
-
+import { attachConsole } from "@tauri-apps/plugin-log";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Menu from "./components/Navigation/Menu";
 import Root from "./routes/Root";
 import BankAccountDataProvider from "./routes/settings/BankAccountDataProvider";
 import BankAccounts from "./routes/settings/BankAccounts";
-
-import Menu from "./components/Navigation/Menu";
 
 const router = createBrowserRouter([
   {
@@ -27,14 +24,12 @@ const router = createBrowserRouter([
   },
 ]);
 
-
-const detach = await attachConsole();
+// Attach console asynchronously without blocking render
+attachConsole().catch(console.error);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <ThemeProvider>
-      <Menu />
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  </React.StrictMode>,
+  <ThemeProvider>
+    <Menu />
+    <RouterProvider router={router} />
+  </ThemeProvider>
 );

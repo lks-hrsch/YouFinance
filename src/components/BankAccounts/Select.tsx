@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { Option, Select } from "@material-tailwind/react";
 import { invoke } from "@tauri-apps/api/core";
-import { Select, Option } from "@material-tailwind/react";
-import { BankInfo } from "../../models/typeshare_definitions";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { BankInfo } from "../../models/typeshare_definitions";
 
 interface BankAccountsSelectProps {
   provider: string;
@@ -23,7 +24,7 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
         // Replace 'invoke' with the actual Tauri function call you use to fetch providers
         invoke("get_banks_by_country_handler", {
           providerTitle: provider,
-          country: country,
+          country,
         }).then((rustBanks: unknown) => {
           const banks = rustBanks as BankInfo[];
           setBanks(banks);
@@ -54,9 +55,9 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
         id="bank-select"
         label="Select a bank"
         onChange={handleChange}
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         {banks.map((provider, index) => (
           <Option key={index} value={provider.id}>

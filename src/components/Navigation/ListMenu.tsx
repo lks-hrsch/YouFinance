@@ -1,10 +1,8 @@
-import React from "react";
-import SettingsListMenu from "./SettingsListMenu";
-import { invoke } from "@tauri-apps/api/core";
-
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-
-import { Typography, List, ListItem } from "@material-tailwind/react";
+import { List, ListItem, Typography } from "@material-tailwind/react";
+import { invoke } from "@tauri-apps/api/core";
+import type React from "react";
+import SettingsListMenu from "./SettingsListMenu";
 
 const ListMenu: React.FC = () => {
   const fetchData = async () => {
@@ -21,34 +19,34 @@ const ListMenu: React.FC = () => {
   return (
     <List
       className="mt-4 mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1"
-      placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
+      placeholder={undefined}
     >
       <Typography
         as="a"
-        href="/"
-        variant="small"
-        color="blue-gray"
         className="font-medium"
-        placeholder={undefined}
+        color="blue-gray"
+        href="/"
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
+        variant="small"
       >
         <ListItem
           className="flex items-center gap-2 py-2 pr-4"
-          placeholder={undefined}
           onPointerEnterCapture={undefined}
           onPointerLeaveCapture={undefined}
+          placeholder={undefined}
         >
           Home
         </ListItem>
       </Typography>
       <SettingsListMenu />
-      <div className="flex items-center justify-center rounded-lg p-2 ">
+      <div className="flex items-center justify-center rounded-lg p-2">
         {/* Refresh button */}
         <a onClick={fetchData}>
-          <ArrowPathIcon strokeWidth="2" className="h-4 w-4 text-gray-900" />
+          <ArrowPathIcon className="h-4 w-4 text-gray-900" strokeWidth="2" />
         </a>
       </div>
     </List>

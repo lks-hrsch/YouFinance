@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-
-import BankAccountDataProviderSelect from "../../components/BankAccountDataProvider/Select";
-import BankAccountsSelect from "../../components/BankAccounts/Select";
-import BankAccountsList from "../../components/BankAccounts/List";
-import { BankConnectionInfo } from "../../models/typeshare_definitions";
-
-import { Button } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { Button } from "@material-tailwind/react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
+import type React from "react";
+import { useState } from "react";
+import BankAccountDataProviderSelect from "../../components/BankAccountDataProvider/Select";
+import BankAccountsList from "../../components/BankAccounts/List";
+import BankAccountsSelect from "../../components/BankAccounts/Select";
+import type { BankConnectionInfo } from "../../models/typeshare_definitions";
 
 const BankAccounts: React.FC = () => {
   const [providerName, setProviderName] = useState<string>("");
@@ -48,16 +47,16 @@ const BankAccounts: React.FC = () => {
       <BankAccountsList />
       <BankAccountDataProviderSelect onProviderSelect={handleProviderSelect} />
       <BankAccountsSelect
-        provider={providerName}
         country="de"
         onBankAccountSelect={handleBankAccountSelect}
+        provider={providerName}
       />
       <Button
         className="flex items-center gap-3"
         onClick={handleConnectBank}
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         <PlusIcon />
         Connect bank
@@ -65,9 +64,9 @@ const BankAccounts: React.FC = () => {
       <Button
         className="flex items-center gap-3"
         onClick={handleAddAccounts}
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         <PlusIcon />
         Add accounts

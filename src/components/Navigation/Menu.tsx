@@ -1,15 +1,12 @@
-import React from "react";
-
-import ListMenu from "./ListMenu";
-
-import {
-  Navbar,
-  Collapse,
-  Typography,
-  IconButton,
-} from "@material-tailwind/react";
-
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Collapse,
+  IconButton,
+  Navbar,
+  Typography,
+} from "@material-tailwind/react";
+import React from "react";
+import ListMenu from "./ListMenu";
 
 const Menu: React.FC = () => {
   const [openNav, setOpenNav] = React.useState(false);
@@ -17,7 +14,7 @@ const Menu: React.FC = () => {
   React.useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false),
+      () => window.innerWidth >= 960 && setOpenNav(false)
     );
   }, []);
 
@@ -25,19 +22,19 @@ const Menu: React.FC = () => {
     <>
       <Navbar
         className="mx-auto mb-4"
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         <div className="flex items-center justify-between text-blue-gray-900">
           <Typography
             as="a"
-            href="/"
-            variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
-            placeholder={undefined}
+            href="/"
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            placeholder={undefined}
+            variant="h6"
           >
             YouFinance
           </Typography>
@@ -45,13 +42,13 @@ const Menu: React.FC = () => {
             <ListMenu />
           </div>
           <IconButton
-            variant="text"
-            color="blue-gray"
             className="lg:hidden"
+            color="blue-gray"
             onClick={() => setOpenNav(!openNav)}
-            placeholder={undefined}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            placeholder={undefined}
+            variant="text"
           >
             {openNav ? (
               <XMarkIcon className="h-6 w-6" strokeWidth={2} />

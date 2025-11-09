@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Provider } from "../../models/typeshare_definitions";
-import { invoke } from "@tauri-apps/api/core";
 import { Card, Typography } from "@material-tailwind/react";
+import { invoke } from "@tauri-apps/api/core";
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { Provider } from "../../models/typeshare_definitions";
 
 const TABLE_HEAD = ["ID", "Provider", "Secret ID", "Secret Key"];
 
@@ -17,7 +18,7 @@ const BankAccountDataProviderList: React.FC = () => {
           (rustBankingProviders: unknown) => {
             const bankingProviders = rustBankingProviders as Provider[];
             setProviders(bankingProviders);
-          },
+          }
         );
       } catch (error) {
         console.error("Failed to fetch providers:", error);
@@ -36,25 +37,25 @@ const BankAccountDataProviderList: React.FC = () => {
     <div>
       <Card
         className="h-full w-full overflow-scroll"
-        placeholder={undefined}
         onPointerEnterCapture={undefined}
         onPointerLeaveCapture={undefined}
+        placeholder={undefined}
       >
         <table className="w-full min-w-max table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
                 <th
+                  className="border-blue-gray-100 border-b bg-blue-gray-50 p-4"
                   key={head}
-                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                 >
                   <Typography
-                    variant="small"
-                    color="blue-gray"
                     className="font-normal leading-none opacity-70"
-                    placeholder={undefined}
+                    color="blue-gray"
                     onPointerEnterCapture={undefined}
                     onPointerLeaveCapture={undefined}
+                    placeholder={undefined}
+                    variant="small"
                   >
                     {head}
                   </Typography>
@@ -73,48 +74,48 @@ const BankAccountDataProviderList: React.FC = () => {
                 <tr key={provider.id}>
                   <td className={classes}>
                     <Typography
-                      variant="small"
-                      color="blue-gray"
                       className="font-normal"
-                      placeholder={undefined}
+                      color="blue-gray"
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
+                      placeholder={undefined}
+                      variant="small"
                     >
                       {provider.id}
                     </Typography>
                   </td>
                   <td className={classes}>
                     <Typography
-                      variant="small"
-                      color="blue-gray"
                       className="font-normal"
-                      placeholder={undefined}
+                      color="blue-gray"
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
+                      placeholder={undefined}
+                      variant="small"
                     >
                       {provider.title}
                     </Typography>
                   </td>
                   <td className={classes}>
                     <Typography
-                      variant="small"
-                      color="blue-gray"
                       className="font-normal"
-                      placeholder={undefined}
+                      color="blue-gray"
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
+                      placeholder={undefined}
+                      variant="small"
                     >
                       {provider.secret_id}
                     </Typography>
                   </td>
                   <td className={classes}>
                     <Typography
-                      variant="small"
-                      color="blue-gray"
                       className="font-normal"
-                      placeholder={undefined}
+                      color="blue-gray"
                       onPointerEnterCapture={undefined}
                       onPointerLeaveCapture={undefined}
+                      placeholder={undefined}
+                      variant="small"
                     >
                       {provider.secret_key}
                     </Typography>
