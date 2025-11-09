@@ -4,11 +4,11 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import type { BankInfo } from "../../models/typeshare_definitions";
 
-interface BankAccountsSelectProps {
+type BankAccountsSelectProps = {
   provider: string;
   country: string;
   onBankAccountSelect: (bankAccount: string) => void;
-}
+};
 
 const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
   provider,
@@ -19,15 +19,15 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
 
   useEffect(() => {
     // Function to fetch banking providers from the Tauri backend
-    const fetchProviders = async () => {
+    const fetchProviders = () => {
       try {
         // Replace 'invoke' with the actual Tauri function call you use to fetch providers
         invoke("get_banks_by_country_handler", {
           providerTitle: provider,
           country,
         }).then((rustBanks: unknown) => {
-          const banks = rustBanks as BankInfo[];
-          setBanks(banks);
+          const fetchedBanks = rustBanks as BankInfo[];
+          setBanks(fetchedBanks);
         });
       } catch (error) {
         console.error("Failed to fetch bank accounts:", error);
@@ -50,8 +50,7 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
   };
 
   return (
-    <>
-      <Select
+    <Select
         id="bank-select"
         label="Select a bank"
         onChange={handleChange}
@@ -59,13 +58,12 @@ const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
         onPointerLeaveCapture={undefined}
         placeholder={undefined}
       >
-        {banks.map((provider, index) => (
-          <Option key={index} value={provider.id}>
-            {provider.name}
+        {banks.map((bank) => (
+          <Option key={bank.id} value={bank.id}>
+            {bank.name}
           </Option>
         ))}
       </Select>
-    </>
   );
 };
 

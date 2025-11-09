@@ -10,11 +10,11 @@ const TransactionListComponent: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    const fetchProviders = async () => {
+    const fetchProviders = () => {
       try {
         invoke("get_transactions").then((rustTransactions: unknown) => {
-          const transactions = rustTransactions as Transaction[];
-          setTransactions(transactions);
+          const fetchedTransactions = rustTransactions as Transaction[];
+          setTransactions(fetchedTransactions);
         });
       } catch (error) {
         console.error("Failed to fetch accounts:", error);
@@ -74,8 +74,11 @@ const TransactionListComponent: React.FC = () => {
 
         {transactions.map((transaction) => (
           <ListItem
+            key={transaction.date}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
+            onResize={undefined}
+            onResizeCapture={undefined}
             placeholder={undefined}
           >
             <div className="w-1/4">{transaction.date}</div>

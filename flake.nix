@@ -1,5 +1,5 @@
 {
-  description = "YouFinance - Tauri + React development environment";
+  description = "youfinance - Tauri + React development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -38,7 +38,7 @@
 
           # Node.js and package managers
           nodejs-slim_24
-          yarn
+          bun
           biome
         ];
       in

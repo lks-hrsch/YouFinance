@@ -3,29 +3,6 @@
 version = 4
 
 [[package]]
-name = "YouFinance"
-version = "0.0.0"
-dependencies = [
- "chrono",
- "diesel",
- "diesel_migrations",
- "dotenv",
- "libsqlite3-sys",
- "log",
- "reqwest",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-devtools",
- "tauri-plugin-fs",
- "tauri-plugin-log",
- "tauri-plugin-shell",
- "tokio",
- "typeshare",
-]
-
-[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6323,6 +6300,29 @@ dependencies = [
  "quote",
  "syn 2.0.109",
  "synstructure",
+]
+
+[[package]]
+name = "youfinance"
+version = "0.0.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "diesel_migrations",
+ "dotenv",
+ "libsqlite3-sys",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-devtools",
+ "tauri-plugin-fs",
+ "tauri-plugin-log",
+ "tauri-plugin-shell",
+ "tokio",
+ "typeshare",
 ]
 
 [[package]]

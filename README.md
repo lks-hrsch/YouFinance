@@ -1,4 +1,4 @@
-# YouFinance
+# youfinance
 
 This project aims to provide a simple and secure way to manage your finances. It allows you to have control over where your data flows and how it is stored. The project is built using Tauri, Rust, and Typescript.
 
@@ -18,7 +18,7 @@ This project aims to provide a simple and secure way to manage your finances. It
 
 ### Development
 
-This project utilizes Typeshare to generate TypeScript type definitions from the Rust implementation. You can find more information about Typeshare [here](https://github.com/1Password/typeshare).
+This project utilizes Typeshare to generate TypeScript type definitions from the Rust implementation. You can find more information about Typeshare [GitHub Repo](https://github.com/1Password/typeshare).
 
 To generate the TypeScript type definitions, run the following command:
 
@@ -26,7 +26,7 @@ To generate the TypeScript type definitions, run the following command:
 typeshare . --lang=typescript --output-file=src/models/typeshare_definitions.ts
 ```
 
-For rapid frontend development, we utilize Material Tailwind, which can be found at https://www.material-tailwind.com/.
+For rapid frontend development, we utilize Material Tailwind, which can be found at <https://www.material-tailwind.com/>.
 
 To run the project in a development environment, execute the following command:
 

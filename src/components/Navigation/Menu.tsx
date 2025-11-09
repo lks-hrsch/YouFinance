@@ -36,7 +36,7 @@ const Menu: React.FC = () => {
             placeholder={undefined}
             variant="h6"
           >
-            YouFinance
+            youfinance
           </Typography>
           <div className="hidden lg:block">
             <ListMenu />

@@ -26,7 +26,7 @@ impl GoCardless {
                 );
                 Ok(())
             }
-            None => Err(ApiError::Custom("access token not available".into())),
+            _none => Err(ApiError::Custom("access token not available".into())),
         }
     }
 }
@@ -66,7 +66,7 @@ impl BankingApi for GoCardless {
         map.insert("secret_key", &self.secret_key);
 
         let res = client
-            .post(&format!("{}{}", self.base_url.to_owned(), "token/new/"))
+            .post(format!("{}{}", self.base_url.to_owned(), "token/new/"))
             .headers(headers)
             .json(&map)
             .send()
@@ -88,11 +88,7 @@ impl BankingApi for GoCardless {
         self.add_authorization_header(&mut headers)?;
 
         let res = client
-            .get(&format!(
-                "{}institutions/?country={}",
-                self.base_url.to_owned(),
-                country
-            ))
+            .get(format!("{}institutions/?country={}", self.base_url.to_owned(), country))
             .headers(headers)
             .send()
             .await?;
@@ -127,7 +123,7 @@ impl BankingApi for GoCardless {
         // map.insert("user_language", user_language);
 
         let res = client
-            .post(&format!("{}requisitions/", self.base_url.to_owned()))
+            .post(format!("{}requisitions/", self.base_url.to_owned()))
             .headers(headers)
             .json(&map)
             .send()
@@ -152,7 +148,7 @@ impl BankingApi for GoCardless {
         self.add_authorization_header(&mut headers)?;
 
         let res = client
-            .delete(&format!(
+            .delete(format!(
                 "{}requisitions/{}/",
                 self.base_url.to_owned(),
                 bank_connection_id
@@ -181,7 +177,7 @@ impl BankingApi for GoCardless {
         self.add_authorization_header(&mut headers)?;
 
         let res = client
-            .get(&format!(
+            .get(format!(
                 "{}requisitions/{}/",
                 self.base_url.to_owned(),
                 bank_connection_id
@@ -212,7 +208,7 @@ impl BankingApi for GoCardless {
         self.add_authorization_header(&mut headers)?;
 
         let res = client
-            .get(&format!(
+            .get(format!(
                 "{}accounts/{}/transactions/",
                 self.base_url.to_owned(),
                 account_id
