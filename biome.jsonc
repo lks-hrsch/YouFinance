@@ -3,5 +3,13 @@
   "extends": [
     "./node_modules/ultracite/config/core/biome.jsonc",
     "./node_modules/ultracite/config/react/biome.jsonc"
-  ]
+  ],
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**/*",
+      "!src/components/ui",
+      "!src/models/typeshare_definitions.ts"
+    ]
+  }
 }

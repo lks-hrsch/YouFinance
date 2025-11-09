@@ -1,12 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import type React from "react";
 import { type FormEvent, useState } from "react";
-import BankAccountDataProviderSelect from "./Select";
+import BankAccountDataProviderSelect from "./select";
 
-interface BankAccountDataProviderAddModalProps {
+type BankAccountDataProviderAddModalProps = {
   isOpen: boolean;
   closeModal: () => void;
-}
+};
 
 const BankAccountDataProviderAddModal: React.FC<
   BankAccountDataProviderAddModalProps
@@ -40,35 +40,43 @@ const BankAccountDataProviderAddModal: React.FC<
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex overflow-auto bg-smoke-light">
       <div className="relative m-auto flex w-full max-w-md flex-col rounded-lg bg-white p-8">
-        <span className="absolute top-0 right-0 p-4" onClick={closeModal}>
-          <button>[Close]</button>
-        </span>
+        <button
+          className="absolute top-0 right-0 p-4"
+          onClick={closeModal}
+          type="button"
+        >
+          [Close]
+        </button>
         <h2>Add New Provider</h2>
         <form className="mt-4" onSubmit={handleSubmit}>
           <div>
-            <label>Name</label>
+            <label htmlFor="provider-name">Name</label>
             <BankAccountDataProviderSelect
               onProviderSelect={handleProviderSelect}
             />
           </div>
           <div className="mt-4">
-            <label>Secret ID (Optional)</label>
+            <label htmlFor="secret-id">Secret ID (Optional)</label>
             <input
               className="mt-1 w-full rounded border border-gray-300 p-2"
+              id="secret-id"
               onChange={(e) => setSid(e.target.value)}
               type="text"
               value={sid}
             />
           </div>
           <div className="mt-4">
-            <label>Secret Key (Optional)</label>
+            <label htmlFor="secret-key">Secret Key (Optional)</label>
             <input
               className="mt-1 w-full rounded border border-gray-300 p-2"
+              id="secret-key"
               onChange={(e) => setSkey(e.target.value)}
               type="text"
               value={skey}
