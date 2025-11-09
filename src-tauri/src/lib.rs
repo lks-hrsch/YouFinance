@@ -1,58 +1,25 @@
-#![allow(clippy::redundant_field_names)]
-#![allow(clippy::needless_lifetimes)]
+use tauri_plugin_log::log::info;
 
-pub mod banking;
-mod commands;
-mod database;
-mod model;
-mod schema;
-
-use commands::*;
-use database::DatabaseState;
-use tauri::Manager;
-use tokio::sync::Mutex;
+// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+#[tauri::command]
+async fn greet(name: &str) -> Result<String, String> {
+    println!("Greet function called with name: {}", name);
+    info!("Greet function called with name: {}", name);
+    Ok(format!("Hello, {}! You've been greeted from Rust!", name))
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut builder = tauri::Builder::default();
-
-    #[cfg(debug_assertions)]
-    {
-        builder = builder.plugin(
+    tauri::Builder::default()
+        .plugin(
             tauri_plugin_log::Builder::new()
-                .clear_targets()
-                .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview))
+                .level(tauri_plugin_log::log::LevelFilter::Info)
                 .build(),
-        );
-    }
-
-    builder = builder.plugin(tauri_plugin_shell::init());
-    builder = builder.plugin(tauri_plugin_fs::init());
-
-    builder = builder.setup(|app| {
-        let path_database = app.path().app_data_dir()?.join("database.sqlite");
-        let database_state = DatabaseState::new(path_database.clone());
-        database_state.run_migrations();
-        app.manage(Mutex::new(database_state));
-        Ok(())
-    });
-
-    // builder = builder.manage();
-
-    builder = builder.invoke_handler(tauri::generate_handler![
-        list_possible_banking_providers,
-        get_banking_providers,
-        add_banking_provider,
-        get_banks_by_country_handler,
-        connect_bank_account_phase_1,
-        connect_bank_account_phase_2,
-        disconnect_bank_account,
-        get_banking_accounts,
-        get_transactions_handler,
-        get_transactions
-    ]);
-
-    builder
+        )
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

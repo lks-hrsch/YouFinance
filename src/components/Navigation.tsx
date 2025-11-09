@@ -9,7 +9,6 @@ export default function Navigation() {
 
   return (
     <nav className="flex gap-8 border-gray-300 border-b bg-gray-100 p-4">
-      <h1 className="font-bold text-2xl text-amber-300">Navigation</h1>
       <Link
         className={cn(
           "font-medium no-underline transition-colors hover:text-primary",
