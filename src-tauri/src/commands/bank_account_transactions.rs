@@ -4,8 +4,8 @@ use diesel::{
     RunQueryDsl,
     SelectableHelper,
 };
-use log::debug;
 use tauri::State;
+use tauri_plugin_log::log::debug;
 use tokio::sync::Mutex;
 
 use crate::{
@@ -95,6 +95,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
 
 #[tauri::command]
 pub async fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -> Result<Vec<Transaction>, String> {
+    println!("commands::bank_account_transactions::get_transactions");
     debug!("commands::bank_account_transactions::get_transactions");
     use crate::schema::transactions::dsl as transaction_dsl;
 

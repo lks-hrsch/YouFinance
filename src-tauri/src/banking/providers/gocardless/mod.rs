@@ -4,11 +4,11 @@ extern crate reqwest;
 
 use std::collections::HashMap;
 
-use log::{
+use structs::*;
+use tauri_plugin_log::log::{
     debug,
     error,
 };
-use structs::*;
 
 use super::super::{
     apierror::*,

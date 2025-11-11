@@ -40,6 +40,9 @@
           nodejs-slim_24
           bun
           biome
+
+          # build dependencies
+          sqlite
         ];
       in
       {

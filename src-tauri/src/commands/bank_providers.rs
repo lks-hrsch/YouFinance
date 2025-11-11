@@ -4,8 +4,8 @@ use diesel::{
     RunQueryDsl,
     SelectableHelper,
 };
-use log::debug;
 use tauri::State;
+use tauri_plugin_log::log::debug;
 use tokio::sync::Mutex;
 
 use crate::{

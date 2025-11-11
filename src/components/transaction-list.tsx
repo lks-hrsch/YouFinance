@@ -10,18 +10,16 @@ const TransactionListComponent: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    const fetchProviders = () => {
+    const fetchTransactions = async () => {
       try {
-        invoke("get_transactions").then((rustTransactions: unknown) => {
-          const fetchedTransactions = rustTransactions as Transaction[];
-          setTransactions(fetchedTransactions);
-        });
-      } catch (error) {
-        console.error("Failed to fetch accounts:", error);
+        console.log("Fetching transactions...");
+        const rustTransactions = await invoke<Transaction[]>("get_transactions");
+        setTransactions(rustTransactions);
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
       }
     };
-
-    fetchProviders();
+    fetchTransactions();
   }, []);
 
   return (
