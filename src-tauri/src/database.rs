@@ -15,6 +15,10 @@ use diesel_migrations::{
     EmbeddedMigrations,
     MigrationHarness,
 };
+use tauri_plugin_log::log::{
+    debug,
+    info,
+};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -35,10 +39,12 @@ impl DatabaseState {
             fs::File::create(&path).unwrap();
         }
 
+        debug!("database path: {:?}", path);
         Self { path }
     }
 
     pub fn run_migrations(&self) {
+        info!("Running database migrations...");
         self.connection().run_pending_migrations(MIGRATIONS).unwrap();
     }
 

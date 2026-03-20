@@ -1,11 +1,6 @@
 # Logs
 logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
 # other files
 node_modules
@@ -13,6 +8,11 @@ dist
 dist-ssr
 *.local
 *.sqlite
+
+# Nix / direnv
+.direnv/
+result
+result-*
 
 # Editor directories and files
 .idea
