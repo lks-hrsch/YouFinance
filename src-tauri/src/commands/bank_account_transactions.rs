@@ -29,7 +29,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
     let connection = &mut database_state.lock().await.connection();
     let provider: Provider = providers_dsl::providers
         .first::<Provider>(connection)
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("Failed to load provider settings: {}", e))?;
 
     let provider = BankingProviders::from_string(&provider.title).unwrap();
     let gocardless = provider.connect_provider(connection).await?;
@@ -37,7 +37,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
     let accounts: Vec<Account> = accounts_dsl::accounts
         .select(Account::as_select())
         .load(connection)
-        .expect("error loading accounts");
+        .map_err(|e| format!("Failed to load accounts: {}", e))?;
 
     fn transform_transaction(
         old_trans: &crate::banking::providers::gocardless::structs::Transaction,
@@ -72,7 +72,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
         let account_transactions = gocardless
             .get_account_transactions(&account_id)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| format!("Failed to fetch transactions from provider: {}", e))?;
         transactions.extend(
             account_transactions
                 .transactions
@@ -87,7 +87,7 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
             .values(transaction)
             .on_conflict_do_nothing()
             .execute(connection)
-            .expect("Error inserting transactions");
+            .map_err(|e| format!("Failed to save transactions to database: {}", e))?;
     }
 
     Ok(())
@@ -104,7 +104,7 @@ pub async fn get_transactions(database_state: State<'_, Mutex<DatabaseState>>) -
     let mut transactions: Vec<Transaction> = transaction_dsl::transactions
         .select(Transaction::as_select())
         .load(connection)
-        .expect("error loading transactions");
+        .map_err(|e| format!("Failed to load transactions: {}", e))?;
 
     // Sort the transactions by date
     transactions.sort_by(|a, b| b.date.cmp(&a.date));

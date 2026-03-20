@@ -1,55 +1,67 @@
 # youfinance
 
-This project aims to provide a simple and secure way to manage your finances. It allows you to have control over where your data flows and how it is stored. The project is built using Tauri, Rust, and Typescript.
+A simple, secure, and self-hosted personal finance manager. YouFinance gives you full control over where your data flows and how it is stored. Built with Tauri, Rust, Next.js, and TypeScript.
 
-## Setup
+## Tech Stack
 
-### Tools Used
+- [Tauri](https://tauri.app/) — Desktop application shell
+- [Rust](https://www.rust-lang.org/) — Backend logic and database access
+- [Next.js](https://nextjs.org/) — Frontend framework
+- [TypeScript](https://www.typescriptlang.org/) — Frontend type safety
+- [Bun](https://bun.sh/) — JavaScript package manager and runtime
+- [Tailwind CSS](https://tailwindcss.com/) — Utility-first CSS framework
+- [shadcn/ui](https://ui.shadcn.com/) — UI component library
+- [Diesel](https://diesel.rs/) — Rust ORM for SQLite
+- [Typeshare](https://github.com/1password/typeshare) — Generates TypeScript types from Rust structs
+- [GoCardless](https://gocardless.com/) — Bank data provider (Open Banking)
 
-- [Rust](https://www.rust-lang.org/)
-- [Tauri](https://tauri.app/)
-- [Node.js](https://nodejs.org/)
-- [Typescript](https://www.typescriptlang.org/)
-- [Yarn](https://yarnpkg.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Material Tailwind](https://www.material-tailwind.com/)
-- [Heroicons](https://heroicons.com/)
-- [Typeshare](https://github.com/1password/typeshare)
+## Development Setup
 
-### Development
+### Prerequisites
 
-This project utilizes Typeshare to generate TypeScript type definitions from the Rust implementation. You can find more information about Typeshare [GitHub Repo](https://github.com/1Password/typeshare).
+This project uses a [Nix flake](./flake.nix) to manage dependencies. Enter the dev shell with:
 
-To generate the TypeScript type definitions, run the following command:
+```bash
+nix develop
+```
+
+This provides: Rust toolchain, Bun, Biome, `typeshare-cli`, and SQLite.
+
+### Run in development mode
+
+```bash
+bun tauri dev
+# On Linux, if needed:
+WEBKIT_DISABLE_COMPOSITING_MODE=1 bun tauri dev
+```
+
+### Generate TypeScript types from Rust
+
+The project uses [Typeshare](https://github.com/1password/typeshare) to keep the TypeScript models in sync with the Rust data structures. After modifying Rust structs in `src-tauri/src/model.rs`, regenerate the types:
 
 ```bash
 typeshare . --lang=typescript --output-file=src/models/typeshare_definitions.ts
 ```
 
-For rapid frontend development, we utilize Material Tailwind, which can be found at <https://www.material-tailwind.com/>.
+> **Note:** `typeshare` is included in the Nix dev shell. If running outside Nix, install it with `cargo install typeshare-cli`.
 
-To run the project in a development environment, execute the following command:
+### Database Migrations (Diesel)
 
-```bash
-yarn tauri dev
-WEBKIT_DISABLE_COMPOSITING_MODE=1 yarn tauri dev  # needed on linux
-```
-
-To apply diesel migrations, run the following command:
+Run all pending migrations:
 
 ```bash
 cd src-tauri
 diesel migration run --database-url <path/to/database>
 ```
 
-to generate a new migration, run the following command:
+Generate a new migration:
 
 ```bash
 cd src-tauri
 diesel migration generate <migration_name>
 ```
 
-To reapply the migrations, run the following command:
+Redo migrations (e.g., to reapply schema changes):
 
 ```bash
 cd src-tauri
@@ -58,4 +70,10 @@ diesel migration redo --database-url <path/to/database> --number <depth>
 
 ## Recommended IDE Setup
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- [VS Code](https://code.visualstudio.com/) with:
+  - [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode)
+  - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+
+## Disclaimer
+
+See [doc/DISCLAIMER-AI.md](./doc/DISCLAIMER-AI.md) for AI usage disclosure.

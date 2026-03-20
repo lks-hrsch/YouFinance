@@ -50,10 +50,7 @@ const TransactionListComponent: React.FC = () => {
                 const rowClasses = isLast ? "" : "border-b border-slate-100";
 
                 return (
-                  <tr
-                    className={rowClasses}
-                    key={transaction.id.toString()}
-                  >
+                  <tr className={rowClasses} key={transaction.id.toString()}>
                     <td className="p-4">
                       <span className="font-normal text-slate-700 text-sm">
                         {transaction.date}
