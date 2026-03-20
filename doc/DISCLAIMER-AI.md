@@ -1,4 +1,4 @@
-## Disclaimer - AI Usage Disclaimer
+## Disclaimer - AI Usage
 
 This software project was developed with the support of AI-based tools.
 
