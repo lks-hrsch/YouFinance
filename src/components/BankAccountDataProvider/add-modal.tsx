@@ -3,10 +3,10 @@ import type React from "react";
 import { type FormEvent, useState } from "react";
 import BankAccountDataProviderSelect from "./select";
 
-type BankAccountDataProviderAddModalProps = {
-  isOpen: boolean;
+interface BankAccountDataProviderAddModalProps {
   closeModal: () => void;
-};
+  isOpen: boolean;
+}
 
 const BankAccountDataProviderAddModal: React.FC<
   BankAccountDataProviderAddModalProps

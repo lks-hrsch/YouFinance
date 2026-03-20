@@ -38,7 +38,7 @@ pub fn run() {
         ])
         .setup(|app| {
             let path_database = app.path().app_data_dir()?.join("database.sqlite");
-            info!("Database initialized at {:?}", path_database);
+            info!("Database initialized at {path_database:?}");
 
             let database_state = DatabaseState::new(path_database.clone());
             database_state.run_migrations();

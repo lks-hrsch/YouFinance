@@ -25,7 +25,8 @@ pub async fn get_banks_by_country_handler<'a>(
     country: String,
 ) -> Result<Vec<BankInfo>, String> {
     debug!("commands::bank_accounts::get_banks_by_country_handler");
-    let provider = BankingProviders::from_string(&provider_title).unwrap();
+    let provider = BankingProviders::from_string(&provider_title)
+        .ok_or_else(|| format!("Invalid provider: {}", provider_title))?;
     let connection = &mut database_state.lock().await.connection();
     let gocardless = provider.connect_provider(connection).await?;
 
@@ -51,7 +52,8 @@ pub async fn connect_bank_account_phase_1<'a>(
     institution_id: String,
 ) -> Result<BankConnectionInfo, String> {
     debug!("commands::bank_accounts::connect_bank_account_phase_1");
-    let provider = BankingProviders::from_string(&provider_title).unwrap();
+    let provider = BankingProviders::from_string(&provider_title)
+        .ok_or_else(|| format!("Invalid provider: {}", provider_title))?;
     let connection = &mut database_state.lock().await.connection();
     let gocardless = provider.connect_provider(connection).await?;
 
@@ -81,7 +83,8 @@ pub async fn connect_bank_account_phase_2<'a>(
         providers::dsl as providers_dsl,
     };
 
-    let provider = BankingProviders::from_string(&provider_title).unwrap();
+    let provider = BankingProviders::from_string(&provider_title)
+        .ok_or_else(|| format!("Invalid provider: {}", provider_title))?;
     let connection = &mut database_state.lock().await.connection();
     let gocardless = provider.connect_provider(connection).await?;
 
@@ -106,7 +109,7 @@ pub async fn connect_bank_account_phase_2<'a>(
         diesel::insert_into(accounts_dsl::accounts::table())
             .values(&new_account)
             .execute(connection)
-            .expect("error saving new account");
+            .map_err(|e| format!("Error saving new account: {}", e))?;
     }
     Ok(())
 }
@@ -118,7 +121,8 @@ pub async fn disconnect_bank_account<'a>(
     bank_connection_id: String,
 ) -> Result<(), String> {
     debug!("commands::bank_accounts::disconnect_bank_account");
-    let provider = crate::banking::providers::BankingProviders::from_string(&provider_title).unwrap();
+    let provider = crate::banking::providers::BankingProviders::from_string(&provider_title)
+        .ok_or_else(|| format!("Invalid provider: {}", provider_title))?;
     let connection = &mut database_state.lock().await.connection();
     let gocardless = provider.connect_provider(connection).await?;
 
@@ -140,7 +144,7 @@ pub async fn get_banking_accounts(database_state: State<'_, Mutex<DatabaseState>
     let accounts: Vec<Account> = accounts_dsl::accounts
         .select(Account::as_select())
         .load(connection)
-        .expect("error loading accounts");
+        .map_err(|e| format!("Error loading accounts: {}", e))?;
 
     Ok(accounts)
 }

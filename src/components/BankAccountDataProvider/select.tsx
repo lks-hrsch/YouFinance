@@ -11,9 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type BankingProviderSelectProps = {
+interface BankingProviderSelectProps {
   onProviderSelect: (provider: string) => void;
-};
+}
 
 const BankAccountDataProviderSelect: React.FC<BankingProviderSelectProps> = ({
   onProviderSelect,
