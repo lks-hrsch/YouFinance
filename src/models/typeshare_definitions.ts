@@ -12,6 +12,11 @@ export interface Account {
 	iban?: string;
 }
 
+export interface AccountWithProvider {
+	account: Account;
+	provider_title: string;
+}
+
 export interface BankConnectionInfo {
 	id: string;
 	link: string;
@@ -25,9 +30,10 @@ export interface BankInfo {
 export interface NewAccount {
 	title: string;
 	provider_id: number;
-	institution_id: string;
+	institution_id?: string;
 	bank_connection_id: string;
-	account_id: string;
+	account_id?: string;
+	iban?: string;
 }
 
 export interface NewProvider {
@@ -86,5 +92,6 @@ export interface TransactionTag {
 
 export enum BankingProviders {
 	GoCardless = "GoCardless",
+	LocalCSV = "LocalCSV",
 }
 

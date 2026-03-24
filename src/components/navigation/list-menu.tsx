@@ -9,7 +9,7 @@ import SettingsListMenu from "./settings-list-menu";
 export default function ListMenu() {
   const fetchData = async () => {
     try {
-      await invoke("get_transactions_handler");
+      await invoke("sync_all_accounts");
     } catch (error) {
       console.error("Failed to fetch accounts:", error);
     }
