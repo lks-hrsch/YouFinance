@@ -25,8 +25,8 @@ data/
 
 ## MTA Format
 
-Each MTA file consists of one or more transaction blocks.  
-A block contains account and balance information as well as one transaction entry.
+Each MTA file consists of one or more transaction blocks (bank statements) separated by a dash `-`.  
+A single statement block contains global account and balance information for the period, but may contain *multiple* sequential `:61:` (transaction line) and `:86:` (transaction details) tag pairs. The parser must dynamically iterate over these pairs as a continuous stream rather than assuming a strict 1:1 block-to-transaction ratio.
 
 The format uses tagged lines such as:
 
@@ -180,7 +180,7 @@ Currency = `EUR`
 
 The `remittance_information` field shall be extracted from the `:86:` subfields beginning with `SVWZ+`.
 
-If the remittance information spans multiple continuation segments, the importer shall concatenate them in the correct order into one text value.
+Because bank exports frequently exceed the character limit of a single `?2x` tag, the structured remittance text may arbitrarily overflow into immediate subsequent `?2x` or `?6x` tags (like `?24`, `?25`, up to `?29`) without restating the `SVWZ+` marker. The parser must intelligently capture the initial `SVWZ+` flag and continuously concatenate all subsequent matching tag values blindly in the correct order into one text value until interrupted by a standard trailing tag like `?30` (BIC) or `?31` (IBAN).
 
 ### creditor_name
 
@@ -285,11 +285,11 @@ The importer shall apply the following transformations:
 
 1. The system shall recursively scan the configured data folder for MTA files matching the expected directory structure.
 2. The system shall parse MTA files as tagged text files.
-3. The system shall split files into transaction blocks.
-4. The system shall extract one transaction record per `:61:` / `:86:` pair.
+3. The system shall split files into transaction blocks separating periods.
+4. The system shall extract one transaction record per `:61:` / `:86:` pair dynamically, supporting multiple sequential pairs clustered within a single `-` statement block.
 5. The system shall parse `DR` and `CR` indicators correctly to determine the sign of the amount.
 6. The system shall extract currency from the statement balance information.
-7. The system shall reconstruct structured `:86:` data across line breaks.
+7. The system shall reconstruct structured `:86:` data across line breaks and concatenate continuous remittance subfields split across arbitrary `?2x` lengths.
 8. The system shall transform and import each transaction into the `transactions` table.
 9. The system shall store missing optional values as `NULL`.
 10. The system shall log or report transactions that cannot be imported due to invalid format or missing required values.
@@ -304,9 +304,8 @@ The importer shall use the following parsing rules for the provided MTA variant:
 3. `:86:` contains structured details for the preceding `:61:` transaction.
 4. Lines beginning with `?nn` after `:86:` belong to the same `:86:` content.
 5. `?30`, `?31`, and `?32` shall be parsed as BIC, IBAN, and name of the counterpart if present.
-6. `SVWZ+` content shall be extracted from the detail sections and merged into one remittance text.
-7. If multiple `SVWZ+` fragments exist, they shall be concatenated with spaces.
-8. If `:86:` is missing, the transaction may still be imported with only the data available from `:61:`.
+6. `SVWZ+` content shall be intelligently tracked; once detected, all subsequent `?2x` and `?6x` tag values must be blindly concatenated into the overall remittance text until the end of the tag set or a known entity tag (e.g., `?30`) resets the context.
+7. If `:86:` is missing, the transaction may still be imported with only the data available from `:61:`.
 
 ## Open Questions
 

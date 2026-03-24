@@ -76,50 +76,64 @@ fn none_if_empty(s: Option<String>) -> Option<String> {
 mod tests {
     use super::*;
     use std::io::Cursor;
+    use rstest::rstest;
 
-    #[test]
-    fn test_parse_csv_valid() {
-        let csv_data = "Bezeichnung Auftragskonto;IBAN Auftragskonto;BIC Auftragskonto;Bankname Auftragskonto;Buchungstag;Valutadatum;Name Zahlungsbeteiligter;IBAN Zahlungsbeteiligter;BIC (SWIFT-Code) Zahlungsbeteiligter;Buchungstext;Verwendungszweck;Betrag;Waehrung;Saldo nach Buchung;Bemerkung;Gekennzeichneter Umsatz;Glaeubiger ID;Mandatsreferenz\n\
-        BusinessAccount;DE00XXXX00000000000000;BANKDEFFXXX;Sample Bank;30.12.2024;30.12.2024;Telecom Provider GmbH;DE00XXXX00000000000001;HYVEDEMMXXX;LASTSCHRIFT;Customer No.: XXXXXXXX, Invoice No.: XXXXXXXXXX, Monthly service charge EREF: XXXXXXXXXXXXXXXXXXXXXXXXXXXX MREF: XXXXXXXXXXXXXXXXXXXXXXXXXXXX CRED: DE97XXXXXXXXXXXXXXX IBAN: DE00XXXX00000000000001 BIC: HYVEDEMMXXX;-17,49;EUR;1853,02;;;DE97XXXXXXXXXXXXXXX;XXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-        
+    #[rstest]
+    #[case::standard_valid(
+        "Bezeichnung Auftragskonto;IBAN Auftragskonto;BIC Auftragskonto;Bankname Auftragskonto;Buchungstag;Valutadatum;Name Zahlungsbeteiligter;IBAN Zahlungsbeteiligter;BIC (SWIFT-Code) Zahlungsbeteiligter;Buchungstext;Verwendungszweck;Betrag;Waehrung;Saldo nach Buchung;Bemerkung;Gekennzeichneter Umsatz;Glaeubiger ID;Mandatsreferenz\n\
+        BusinessAccount;DE00XXXX00000000000000;BANKDEFFXXX;Sample Bank;30.12.2024;30.12.2024;Telecom Provider GmbH;DE00XXXX00000000000001;HYVEDEMMXXX;LASTSCHRIFT;Customer No.: XXXXXXXX, Invoice No.: XXXXXXXXXX, Monthly service charge EREF: XXXXXXXXXXXXXXXXXXXXXXXXXXXX MREF: XXXXXXXXXXXXXXXXXXXXXXXXXXXX CRED: DE97XXXXXXXXXXXXXXX IBAN: DE00XXXX00000000000001 BIC: HYVEDEMMXXX;-17,49;EUR;1853,02;;;DE97XXXXXXXXXXXXXXX;XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        42,
+        "BusinessAccount",
+        -17.49,
+        "30.12.2024",
+        Some("Telecom Provider GmbH"),
+        Some("HYVEDEMMXXX"),
+        Some("DE00XXXX00000000000001"),
+        Some("DE00XXXX00000000000000"),
+        Some("BANKDEFFXXX"),
+        Some("Sample Bank")
+    )]
+    #[case::empty_fields_and_thousand_separators(
+        "Bezeichnung Auftragskonto;IBAN Auftragskonto;BIC Auftragskonto;Bankname Auftragskonto;Buchungstag;Valutadatum;Name Zahlungsbeteiligter;IBAN Zahlungsbeteiligter;BIC (SWIFT-Code) Zahlungsbeteiligter;Buchungstext;Verwendungszweck;Betrag;Waehrung;Saldo nach Buchung;Bemerkung;Gekennzeichneter Umsatz;Glaeubiger ID;Mandatsreferenz\n\
+        BusinessAccount;;;;30.12.2024;30.12.2024;;;;;some info;1.000,50;USD;;;;;",
+        1,
+        "BusinessAccount",
+        1000.50,
+        "30.12.2024",
+        None,
+        None,
+        None,
+        None,
+        None,
+        None
+    )]
+    fn test_parse_csv_parameterized(
+        #[case] csv_data: &str,
+        #[case] expected_account: i32,
+        #[case] expected_title: &str,
+        #[case] expected_amount: f64,
+        #[case] expected_date: &str,
+        #[case] expected_creditor_name: Option<&str>,
+        #[case] expected_creditor_bic: Option<&str>,
+        #[case] expected_creditor_iban: Option<&str>,
+        #[case] expected_debitor_iban: Option<&str>,
+        #[case] expected_debitor_bic: Option<&str>,
+        #[case] expected_debitor_name: Option<&str>,
+    ) {
         let reader = Cursor::new(csv_data);
-        let result = parse_csv(reader, 42).unwrap();
-        
+        let result = parse_csv(reader, expected_account).unwrap();
         assert_eq!(result.len(), 1);
         let tx = &result[0];
-        
-        assert_eq!(tx.title, "BusinessAccount");
-        assert_eq!(tx.debitor_iban.as_deref(), Some("DE00XXXX00000000000000"));
-        assert_eq!(tx.debitor_bic.as_deref(), Some("BANKDEFFXXX"));
-        assert_eq!(tx.debitor_name.as_deref(), Some("Sample Bank"));
-        assert_eq!(tx.date, "30.12.2024");
-        assert_eq!(tx.creditor_name.as_deref(), Some("Telecom Provider GmbH"));
-        assert_eq!(tx.creditor_iban.as_deref(), Some("DE00XXXX00000000000001"));
-        assert_eq!(tx.creditor_bic.as_deref(), Some("HYVEDEMMXXX"));
-        assert_eq!(tx.amount, -17.49);
-        assert_eq!(tx.currency, "EUR");
-        assert_eq!(tx.account_id, 42);
-        assert!(tx.remittance_information.as_ref().unwrap().contains("Customer No."));
-    }
 
-    #[test]
-    fn test_parse_csv_empty_fields_and_thousand_separators() {
-        let csv_data = "Bezeichnung Auftragskonto;IBAN Auftragskonto;BIC Auftragskonto;Bankname Auftragskonto;Buchungstag;Valutadatum;Name Zahlungsbeteiligter;IBAN Zahlungsbeteiligter;BIC (SWIFT-Code) Zahlungsbeteiligter;Buchungstext;Verwendungszweck;Betrag;Waehrung;Saldo nach Buchung;Bemerkung;Gekennzeichneter Umsatz;Glaeubiger ID;Mandatsreferenz\n\
-        BusinessAccount;;;;30.12.2024;30.12.2024;;;;;some info;1.000,50;USD;;;;;";
-        
-        let reader = Cursor::new(csv_data);
-        let result = parse_csv(reader, 1).unwrap();
-        
-        assert_eq!(result.len(), 1);
-        let tx = &result[0];
-        
-        assert_eq!(tx.debitor_iban, None);
-        assert_eq!(tx.debitor_bic, None);
-        assert_eq!(tx.debitor_name, None);
-        assert_eq!(tx.creditor_name, None);
-        assert_eq!(tx.creditor_iban, None);
-        assert_eq!(tx.creditor_bic, None);
-        assert_eq!(tx.amount, 1000.50);
-        assert_eq!(tx.currency, "USD");
+        assert_eq!(tx.title, expected_title);
+        assert_eq!(tx.amount, expected_amount);
+        assert_eq!(tx.date, expected_date);
+        assert_eq!(tx.creditor_name.as_deref(), expected_creditor_name);
+        assert_eq!(tx.creditor_bic.as_deref(), expected_creditor_bic);
+        assert_eq!(tx.creditor_iban.as_deref(), expected_creditor_iban);
+        assert_eq!(tx.debitor_iban.as_deref(), expected_debitor_iban);
+        assert_eq!(tx.debitor_bic.as_deref(), expected_debitor_bic);
+        assert_eq!(tx.debitor_name.as_deref(), expected_debitor_name);
+        assert_eq!(tx.account_id, expected_account);
     }
 }

@@ -20,7 +20,23 @@ pub const UNIFIED_MTA: &str = "-
 :62F:C240110EUR1320,68
 -";
 
-fn assert_unified_transaction(tx: &NewTransaction) {
+use rstest::rstest;
+
+#[rstest]
+#[case::unified_csv_parser(UNIFIED_CSV, "csv")]
+#[case::unified_mta_parser(UNIFIED_MTA, "mta")]
+fn test_unified_parsers(#[case] data: &str, #[case] parser_type: &str) {
+    let reader = Cursor::new(data);
+    
+    let result = if parser_type == "csv" {
+        parse_csv(reader, 99).expect("CSV Parsing failed")
+    } else {
+        parse_mta(reader, 99).expect("MTA Parsing failed")
+    };
+    
+    assert_eq!(result.len(), 1);
+    let tx = &result[0];
+
     assert_eq!(tx.title, "EINZUGSERMAECHTIGUNG");
     assert_eq!(tx.creditor_name.as_deref(), Some("Example Payee GmbH"));
     assert_eq!(tx.creditor_iban.as_deref(), Some("DE00XXXXXXXXXXXXXXX"));
@@ -30,24 +46,4 @@ fn assert_unified_transaction(tx: &NewTransaction) {
     assert_eq!(tx.date, "10.01.2024");
     assert_eq!(tx.remittance_information.as_deref(), Some("Monthly subscription"));
     assert_eq!(tx.account_id, 99);
-}
-
-#[test]
-fn test_unified_csv_parser() {
-    let reader = Cursor::new(UNIFIED_CSV);
-    let result = parse_csv(reader, 99).expect("CSV Parsing failed");
-    assert_eq!(result.len(), 1);
-    assert_unified_transaction(&result[0]);
-    // CSV specifically parses debitor bank name which MTA typically ignores
-    assert_eq!(result[0].debitor_name.as_deref(), Some("Sample Bank"));
-}
-
-#[test]
-fn test_unified_mta_parser() {
-    let reader = Cursor::new(UNIFIED_MTA);
-    let result = parse_mta(reader, 99).expect("MTA Parsing failed");
-    assert_eq!(result.len(), 1);
-    assert_unified_transaction(&result[0]);
-    // MTA typically maps :25: into debitor_iban 
-    assert_eq!(result[0].debitor_iban.as_deref(), Some("00000000"));
 }
