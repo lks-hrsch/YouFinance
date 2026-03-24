@@ -40,8 +40,10 @@ export interface NewTransaction {
 	title: string;
 	debitor_name?: string;
 	debitor_iban?: string;
+	debitor_bic?: string;
 	creditor_name?: string;
 	creditor_iban?: string;
+	creditor_bic?: string;
 	amount: number;
 	currency: string;
 	date: string;
@@ -66,8 +68,10 @@ export interface Transaction {
 	title: string;
 	debitor_name?: string;
 	debitor_iban?: string;
+	debitor_bic?: string;
 	creditor_name?: string;
 	creditor_iban?: string;
+	creditor_bic?: string;
 	amount: number;
 	currency: string;
 	date: string;

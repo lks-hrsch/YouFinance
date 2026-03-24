@@ -41,11 +41,9 @@
           bun
           biome
 
-          # Typeshare CLI for generating TypeScript types from Rust
-          typeshare
-
           # build dependencies
           sqlite
+          typeshare
           diesel-cli
         ];
       in
