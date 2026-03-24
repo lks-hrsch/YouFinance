@@ -52,7 +52,7 @@ typeshare . --lang=typescript --output-file=src/models/typeshare_definitions.ts
 To run the backend unit tests, execute the following command:
 
 ```bash
-cargo test --manifest-path src-tauri/Cargo.toml
+cargo nextest run --manifest-path src-tauri/Cargo.toml -- 
 ```
 
 ### Testing the Parsers with CLI

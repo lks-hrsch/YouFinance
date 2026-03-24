@@ -1,4 +1,3 @@
-use crate::model::NewTransaction;
 use super::csv::parse_csv;
 use super::mta::parse_mta;
 use std::io::Cursor;
@@ -43,7 +42,7 @@ fn test_unified_parsers(#[case] data: &str, #[case] parser_type: &str) {
     assert_eq!(tx.creditor_bic.as_deref(), Some("BANKDEFFXXX"));
     assert_eq!(tx.amount, -46.55);
     assert_eq!(tx.currency, "EUR");
-    assert_eq!(tx.date, "10.01.2024");
+    assert_eq!(tx.date, "2024-01-10");
     assert_eq!(tx.remittance_information.as_deref(), Some("Monthly subscription"));
     assert_eq!(tx.account_id, 99);
 }

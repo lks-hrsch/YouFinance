@@ -35,6 +35,7 @@
         buildInputs = with pkgs; [
           # Rust toolchain from rust-overlay
           rustToolchain
+          cargo-nextest # testing
 
           # Node.js and package managers
           nodejs-slim_24
