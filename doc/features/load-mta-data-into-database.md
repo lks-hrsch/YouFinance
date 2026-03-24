@@ -1,6 +1,6 @@
 # load mta data into the database
 
-The system shall support importing transaction data from MTA files into the database.  
+The system shall support importing transaction data from MTA files (MT940 Standard) into the database.  
 MTA files are provided in a folder structure organized by provider and year.
 
 ## Input File Structure
