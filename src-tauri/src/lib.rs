@@ -1,8 +1,8 @@
-mod banking;
+pub mod banking;
 mod commands;
 mod database;
-mod model;
-mod schema;
+pub mod model;
+pub mod schema;
 
 use tauri::Manager;
 use tauri_plugin_log::log::info;

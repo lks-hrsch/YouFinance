@@ -31,7 +31,8 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
         .first::<Provider>(connection)
         .map_err(|e| format!("Failed to load provider settings: {}", e))?;
 
-    let provider = BankingProviders::from_string(&provider.title).unwrap();
+    let provider = BankingProviders::from_string(&provider.title)
+        .ok_or_else(|| format!("Invalid provider: {}", provider.title))?;
     let gocardless = provider.connect_provider(connection).await?;
 
     let accounts: Vec<Account> = accounts_dsl::accounts
@@ -56,8 +57,10 @@ pub async fn get_transactions_handler<'a>(database_state: State<'a, Mutex<Databa
             title: "".into(),
             debitor_name: old_trans.debtor_name.clone(),
             debitor_iban: debitor_iban,
+            debitor_bic: None,
             creditor_name: old_trans.creditor_name.clone(),
             creditor_iban: creditor_iban,
+            creditor_bic: None,
             amount: amount,
             currency: old_trans.transaction_amount.clone().currency,
             date: date,

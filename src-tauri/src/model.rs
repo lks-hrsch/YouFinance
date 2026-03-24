@@ -80,8 +80,10 @@ pub struct Transaction {
     pub title: String,
     pub debitor_name: Option<String>,
     pub debitor_iban: Option<String>,
+    pub debitor_bic: Option<String>,
     pub creditor_name: Option<String>,
     pub creditor_iban: Option<String>,
+    pub creditor_bic: Option<String>,
     pub amount: f64,
     pub currency: String,
     pub date: String,
@@ -90,14 +92,16 @@ pub struct Transaction {
 }
 
 #[typeshare]
-#[derive(Insertable, AsChangeset)]
+#[derive(Insertable, AsChangeset, Debug)]
 #[diesel(table_name = transactions)]
 pub struct NewTransaction {
     pub title: String,
     pub debitor_name: Option<String>,
     pub debitor_iban: Option<String>,
+    pub debitor_bic: Option<String>,
     pub creditor_name: Option<String>,
     pub creditor_iban: Option<String>,
+    pub creditor_bic: Option<String>,
     pub amount: f64,
     pub currency: String,
     pub date: String,

@@ -46,6 +46,7 @@
 
           # build dependencies
           sqlite
+          diesel-cli
         ];
       in
       {

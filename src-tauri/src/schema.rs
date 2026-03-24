@@ -48,6 +48,8 @@ diesel::table! {
         date -> Text,
         remittance_information -> Nullable<Text>,
         account_id -> Integer,
+        debitor_bic -> Nullable<Text>,
+        creditor_bic -> Nullable<Text>,
     }
 }
 

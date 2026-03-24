@@ -47,6 +47,26 @@ typeshare . --lang=typescript --output-file=src/models/typeshare_definitions.ts
 
 ### Database Migrations (Diesel)
 
+### Running Tests
+
+To run the backend unit tests, execute the following command:
+
+```bash
+cargo test --manifest-path src-tauri/Cargo.toml
+```
+
+### Testing the Parsers with CLI
+
+You can test real-world `.csv` or `.mta` files against the application parsers via the built-in CLI helper. From the project root, run:
+
+```bash
+cargo run --manifest-path src-tauri/Cargo.toml --bin parse -- path/to/real/file.csv
+# or
+cargo run --manifest-path src-tauri/Cargo.toml --bin parse -- path/to/real/file.mta
+```
+
+### Database Migrations (Diesel)
+
 Run all pending migrations:
 
 ```bash
