@@ -6,6 +6,7 @@ version = "0.0.0"
 description = "A Tauri App"
 authors = ["Lukas Hirsch"]
 edition = "2021"
+default-run = "youfinance"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
