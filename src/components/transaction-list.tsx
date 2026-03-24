@@ -49,7 +49,6 @@ const TransactionListComponent: React.FC = () => {
                 const isLast = index === transactions.length - 1;
                 const rowClasses = isLast ? "" : "border-b border-slate-100";
 
-                const fallbackKey = `${transaction.date}-${index}`;
                 return (
                   <tr className={rowClasses} key={transaction.id.toString()}>
                     <td className="p-4">
