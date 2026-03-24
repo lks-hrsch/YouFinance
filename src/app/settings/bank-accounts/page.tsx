@@ -38,7 +38,7 @@ export default function BankAccountsPage() {
       unlisten = await listen<string>("gocardless-redirect", async (event) => {
         console.log("Received GoCardless redirect event with ref:", event.payload);
         const req_id = event.payload;
-        
+
         setIsConnecting(true);
         try {
           await invoke("connect_bank_account_phase_2", {
@@ -105,7 +105,7 @@ export default function BankAccountsPage() {
         <h2 className="text-2xl font-bold tracking-tight">Bank Accounts</h2>
       </div>
       <BankAccountsList refreshTrigger={refreshTrigger} />
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Add New Account</CardTitle>
@@ -120,18 +120,18 @@ export default function BankAccountsPage() {
             <>
               <div className="space-y-2">
                 <label className="font-medium text-sm">Bank Name</label>
-                <Input 
-                  placeholder="e.g. MLP" 
-                  value={bankName} 
-                  onChange={(e) => setBankName(e.target.value)} 
+                <Input
+                  placeholder="e.g. MLP"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <label className="font-medium text-sm">IBAN</label>
-                <Input 
-                  placeholder="e.g. DE12 3456..." 
-                  value={iban} 
-                  onChange={(e) => setIban(e.target.value)} 
+                <Input
+                  placeholder="e.g. DE12 3456..."
+                  value={iban}
+                  onChange={(e) => setIban(e.target.value)}
                 />
               </div>
               <Button onClick={handleAddLocalCSVAccount} className="w-full">
