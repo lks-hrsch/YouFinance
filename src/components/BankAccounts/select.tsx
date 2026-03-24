@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/select";
 import type { BankInfo } from "../../models/typeshare_definitions";
 
-type BankAccountsSelectProps = {
-  provider: string;
+interface BankAccountsSelectProps {
   country: string;
   onBankAccountSelect: (bankAccount: string) => void;
-};
+  provider: string;
+}
 
 const BankAccountsSelect: React.FC<BankAccountsSelectProps> = ({
   provider,

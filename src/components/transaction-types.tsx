@@ -1,30 +1,30 @@
 // TypeScript interfaces mirroring the Rust structs
 
-export type TransactionAmount = {
-  currency: string;
+export interface TransactionAmount {
   amount: string;
-};
+  currency: string;
+}
 
-export type DebtorAccount = {
+export interface DebtorAccount {
   iban: string;
-};
+}
 
-export type Transaction = {
-  transactionId?: string | null;
-  debtorName?: string | null;
-  debtorAccount?: DebtorAccount | null;
-  transactionAmount: TransactionAmount;
-  bookingDate: string;
-  valueDate: string;
-  remittanceInformationUnstructured?: string | null;
+export interface Transaction {
   bankTransactionCode?: string | null;
-};
+  bookingDate: string;
+  debtorAccount?: DebtorAccount | null;
+  debtorName?: string | null;
+  remittanceInformationUnstructured?: string | null;
+  transactionAmount: TransactionAmount;
+  transactionId?: string | null;
+  valueDate: string;
+}
 
-export type Transactions = {
+export interface Transactions {
   booked: Transaction[];
   pending: Transaction[];
-};
+}
 
-export type BankTransactions = {
+export interface BankTransactions {
   transactions: Transactions;
-};
+}

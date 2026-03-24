@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import BankAccountDataProviderAddModal from "@/components/BankAccountDataProvider/add-modal";
 import BankAccountDataProviderList from "@/components/BankAccountDataProvider/list";
+import { Button } from "@/components/ui/button";
 
 export default function BankAccountDataProviderPage() {
   const [isModalOpen, setModalOpen] = useState(false);

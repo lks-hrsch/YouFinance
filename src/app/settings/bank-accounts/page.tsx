@@ -4,10 +4,10 @@ import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-shell";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import BankAccountDataProviderSelect from "@/components/BankAccountDataProvider/select";
 import BankAccountsList from "@/components/BankAccounts/list";
 import BankAccountsSelect from "@/components/BankAccounts/select";
+import { Button } from "@/components/ui/button";
 import type { BankConnectionInfo } from "../../../models/typeshare_definitions";
 
 export default function BankAccountsPage() {

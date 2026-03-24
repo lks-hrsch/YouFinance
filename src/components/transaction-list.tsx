@@ -13,7 +13,8 @@ const TransactionListComponent: React.FC = () => {
     const fetchTransactions = async () => {
       try {
         console.log("Fetching transactions...");
-        const rustTransactions = await invoke<Transaction[]>("get_transactions");
+        const rustTransactions =
+          await invoke<Transaction[]>("get_transactions");
         setTransactions(rustTransactions);
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
@@ -49,10 +50,7 @@ const TransactionListComponent: React.FC = () => {
                 const rowClasses = isLast ? "" : "border-b border-slate-100";
 
                 return (
-                  <tr
-                    className={rowClasses}
-                    key={`${transaction.date}-${index}`}
-                  >
+                  <tr className={rowClasses} key={transaction.id.toString()}>
                     <td className="p-4">
                       <span className="font-normal text-slate-700 text-sm">
                         {transaction.date}
