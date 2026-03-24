@@ -66,9 +66,17 @@ pub struct Account {
 pub struct NewAccount {
     pub title: String,
     pub provider_id: i32,
-    pub institution_id: String,
+    pub institution_id: Option<String>,
     pub bank_connection_id: String,
-    pub account_id: String,
+    pub account_id: Option<String>,
+    pub iban: Option<String>,
+}
+
+#[typeshare]
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AccountWithProvider {
+    pub account: Account,
+    pub provider_title: String,
 }
 
 #[typeshare]

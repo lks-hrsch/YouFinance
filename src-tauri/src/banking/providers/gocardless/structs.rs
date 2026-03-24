@@ -6,43 +6,43 @@ use serde::{
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AccessToken {
     pub access: String,
-    access_expires: u64,
-    refresh: String,
-    refresh_expires: u64,
+    pub access_expires: u64,
+    pub refresh: String,
+    pub refresh_expires: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Bank {
     pub id: String,
     pub name: String,
-    bic: String,
-    transaction_total_days: String,
-    countries: Vec<String>,
-    logo: String,
+    pub bic: String,
+    pub transaction_total_days: String,
+    pub countries: Vec<String>,
+    pub logo: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Status {
-    short: String,
-    long: String,
-    description: String,
+    pub short: String,
+    pub long: String,
+    pub description: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BankConnection {
     pub id: Option<String>,
-    created: Option<String>,
-    redirect: Option<String>,
-    status: Option<String>,
-    institution_id: String,
-    agreement: Option<String>,
-    reference: Option<String>,
-    accounts: Option<Vec<String>>,
-    user_language: Option<String>,
+    pub created: Option<String>,
+    pub redirect: Option<String>,
+    pub status: Option<String>,
+    pub institution_id: String,
+    pub agreement: Option<String>,
+    pub reference: Option<String>,
+    pub accounts: Option<Vec<String>>,
+    pub user_language: Option<String>,
     pub link: Option<String>,
-    ssn: Option<String>,
-    account_selection: Option<bool>,
-    redirect_immediate: Option<bool>,
+    pub ssn: Option<String>,
+    pub account_selection: Option<bool>,
+    pub redirect_immediate: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -55,11 +55,11 @@ pub struct PaginatedBankConnection {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BankAccounts {
-    id: String,
-    status: String,
-    agreements: Option<String>,
+    pub id: String,
+    pub status: String,
+    pub agreements: Option<String>,
     pub accounts: Vec<String>,
-    reference: String,
+    pub reference: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -76,11 +76,11 @@ pub struct DebtorAccount {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct CreditorAccount {
     pub iban: Option<String>,
-    bban: Option<String>,
-    pan: Option<String>,
-    masked_pan: Option<String>,
-    msisdn: Option<String>,
-    currency: Option<String>,
+    pub bban: Option<String>,
+    pub pan: Option<String>,
+    pub masked_pan: Option<String>,
+    pub msisdn: Option<String>,
+    pub currency: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

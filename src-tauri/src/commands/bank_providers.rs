@@ -1,5 +1,6 @@
 use diesel::{
     associations::HasTable,
+    ExpressionMethods,
     QueryDsl,
     RunQueryDsl,
     SelectableHelper,
@@ -53,7 +54,39 @@ pub async fn add_banking_provider(
     diesel::insert_into(providers::table())
         .values(&new_provider)
         .execute(connection)
-        .expect("error saving new provider");
+        .map_err(|e| format!("Error saving new provider: {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn delete_banking_provider(
+    database_state: State<'_, Mutex<DatabaseState>>,
+    provider_id: i32,
+) -> Result<(), String> {
+    debug!("commands::bank_providers::delete_banking_provider ID: {}", provider_id);
+    use crate::schema::providers::dsl::*;
+
+    let mut connection = database_state.lock().await.connection();
+    use crate::schema::{
+        accounts::dsl as accounts_dsl,
+    };
+
+    // First, find all accounts for this provider to delete them using the shared logic
+    let provider_accounts: Vec<i32> = accounts_dsl::accounts
+        .filter(accounts_dsl::provider_id.eq(provider_id))
+        .select(accounts_dsl::id)
+        .load::<i32>(&mut connection)
+        .map_err(|e| format!("Error finding accounts for provider: {}", e))?;
+
+    // Delete each account using the helper (which also deletes transactions and tags)
+    for account_id in provider_accounts {
+        crate::commands::bank_accounts::delete_bank_account_internal(&mut connection, account_id)?;
+    }
+
+    diesel::delete(providers.filter(id.eq(provider_id)))
+        .execute(&mut connection)
+        .map_err(|e| format!("Error deleting provider: {}", e))?;
 
     Ok(())
 }

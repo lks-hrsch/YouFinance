@@ -2,6 +2,7 @@ use serde::Deserialize;
 use std::io::Read;
 
 use crate::model::NewTransaction;
+use crate::banking::utils::{normalize_date, none_if_empty};
 
 #[derive(Debug, Deserialize)]
 pub struct CsvTransactionRow {
@@ -57,7 +58,7 @@ pub fn parse_csv<R: Read>(reader: R, account_id: i32) -> Result<Vec<NewTransacti
             creditor_bic: none_if_empty(record.creditor_bic),
             amount: amount_f64,
             currency: record.currency,
-            date: record.date,
+            date: normalize_date(&record.date),
             remittance_information: none_if_empty(record.remittance_information),
             account_id,
         };
@@ -66,10 +67,6 @@ pub fn parse_csv<R: Read>(reader: R, account_id: i32) -> Result<Vec<NewTransacti
     }
     
     Ok(transactions)
-}
-
-fn none_if_empty(s: Option<String>) -> Option<String> {
-    s.filter(|v| !v.trim().is_empty())
 }
 
 #[cfg(test)]

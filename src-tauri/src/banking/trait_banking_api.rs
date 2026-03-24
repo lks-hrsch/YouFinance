@@ -3,29 +3,28 @@ use super::{
     providers::gocardless::structs::*,
 };
 
-pub trait BankingApi {
-    fn new(secret_id: &str, secret_key: &str)
-        -> impl std::future::Future<Output = Result<GoCardless, ApiError>> + Send;
-    fn get_access_token(&self) -> impl std::future::Future<Output = Result<AccessToken, ApiError>> + Send;
-    fn get_banks_by_country(
+#[allow(async_fn_in_trait)]
+pub trait BankingApi: Send + Sync {
+    async fn get_access_token(&self) -> Result<AccessToken, ApiError>;
+    async fn get_banks_by_country(
         &self,
         country: &str,
-    ) -> impl std::future::Future<Output = Result<Vec<Bank>, ApiError>> + Send;
-    fn connect_bank(
+    ) -> Result<Vec<Bank>, ApiError>;
+    async fn connect_bank(
         &self,
         redirect: &str,
         institution_id: &str,
-    ) -> impl std::future::Future<Output = Result<BankConnection, ApiError>> + Send;
-    fn disconnect_bank(
+    ) -> Result<BankConnection, ApiError>;
+    async fn disconnect_bank(
         &self,
         bank_connection_id: &str,
-    ) -> impl std::future::Future<Output = Result<(), ApiError>> + Send;
-    fn get_bank_accounts(
+    ) -> Result<(), ApiError>;
+    async fn get_bank_accounts(
         &self,
         bank_connection_id: &str,
-    ) -> impl std::future::Future<Output = Result<BankAccounts, ApiError>> + Send;
-    fn get_account_transactions(
+    ) -> Result<BankAccounts, ApiError>;
+    async fn get_account_transactions(
         &self,
         account_id: &str,
-    ) -> impl std::future::Future<Output = Result<BankTransactions, ApiError>> + Send;
+    ) -> Result<BankTransactions, ApiError>;
 }

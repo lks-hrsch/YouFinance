@@ -16,23 +16,7 @@ use super::super::{
 };
 
 impl GoCardless {
-    // Check if access_token is available
-    fn add_authorization_header(&self, headers: &mut reqwest::header::HeaderMap) -> Result<(), ApiError> {
-        match &self.access_token {
-            Some(access_token) => {
-                headers.insert(
-                    reqwest::header::AUTHORIZATION,
-                    reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
-                );
-                Ok(())
-            }
-            _none => Err(ApiError::Custom("access token not available".into())),
-        }
-    }
-}
-
-impl BankingApi for GoCardless {
-    async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError> {
+    pub async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError> {
         let mut this = GoCardless {
             base_url: "https://bankaccountdata.gocardless.com/api/v2/".into(),
             secret_id: secret_id.into(),
@@ -52,6 +36,22 @@ impl BankingApi for GoCardless {
         }
     }
 
+    // Check if access_token is available
+    fn add_authorization_header(&self, headers: &mut reqwest::header::HeaderMap) -> Result<(), ApiError> {
+        match &self.access_token {
+            Some(access_token) => {
+                headers.insert(
+                    reqwest::header::AUTHORIZATION,
+                    reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
+                );
+                Ok(())
+            }
+            _none => Err(ApiError::Custom("access token not available".into())),
+        }
+    }
+}
+
+impl BankingApi for GoCardless {
     async fn get_access_token(&self) -> Result<AccessToken, ApiError> {
         let client = reqwest::Client::new();
         let mut headers = reqwest::header::HeaderMap::new();
@@ -118,9 +118,6 @@ impl BankingApi for GoCardless {
         let mut map = HashMap::new();
         map.insert("redirect", redirect);
         map.insert("institution_id", institution_id);
-        // map.insert("reference", reference);
-        // map.insert("agreement", agreement);
-        // map.insert("user_language", user_language);
 
         let res = client
             .post(format!("{}requisitions/", self.base_url.to_owned()))
@@ -161,7 +158,6 @@ impl BankingApi for GoCardless {
         let body = res.text().await?;
         debug!("banking::providers::gocardless::disconnect_bank: {}", body);
         if status.is_success() {
-            // log the body
             debug!("disconnect bank: {}", body);
             Ok(())
         } else {

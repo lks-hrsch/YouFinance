@@ -1,6 +1,8 @@
 use crate::model::NewTransaction;
 use std::io::Read;
 
+use crate::banking::utils::normalize_date;
+
 pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTransaction>, String> {
     let mut contents = String::new();
     reader.read_to_string(&mut contents).map_err(|e| e.to_string())?;
@@ -159,7 +161,7 @@ pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTrans
                         creditor_bic,
                         amount: amount_val,
                         currency: currency.clone(),
-                        date: date_str,
+                        date: normalize_date(&date_str),
                         remittance_information: if remittance.is_empty() { None } else { Some(remittance) },
                         account_id,
                     };
@@ -172,6 +174,7 @@ pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTrans
 
     Ok(transactions)
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -196,7 +199,7 @@ mod tests {
         1,
         "EINZUGSERMAECHTIGUNG",
         -46.55,
-        "10.01.2024",
+        "2024-01-10",
         Some("Example Payee GmbH"),
         Some("BANKDEFFXXX"),
         Some("DE00XXXXXXXXXXXXXXX")
@@ -209,7 +212,7 @@ mod tests {
         2,
         "LOHN/GEHALT",
         1234.56,
-        "31.12.2024",
+        "2024-12-31",
         Some("My Employer"),
         None,
         None
@@ -227,7 +230,7 @@ mod tests {
         1,
         "EINZUGSERMAECHTIGUNG",
         -46.55,
-        "10.01.2024",
+        "2024-01-10",
         Some("Max Mustermann"),
         Some("EXAMXXX"),
         Some("DE00000000000000000000")
