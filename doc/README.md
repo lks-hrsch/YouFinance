@@ -10,6 +10,110 @@ Welcome to the YouFinance documentation directory. This folder contains structur
 - **[Loading MTA (MT940) Data into Database](./features/load-mta-data-into-database.md)**
   - A highly detailed specification for parsing standard `.mta` / `MT940` formats. Includes structured details detailing parser mappings for (`:61:`, `:86:`) markers, block-level configurations, and subfield (`?2x`) continuity rules. Addresses critical structural variations such as multiple-transaction blocks and fragmented remittance concatenation logic.
 
+- **[Loading Live Data via GoCardless into Database](./features/load-live-data-via-gocardless-into-database.md)**
+  - Documents the GoCardless Bank Account Data API integration: two-phase bank connection flow (requisitions), authentication, transaction sync commands, field mapping, and deduplication strategy.
+
 ## 📝 Documenting New Features
 
 When expanding YouFinance structures, please create a dedicated markdown document within the `features/` subdirectory and formally link it here to maintain an accessible, high-level project map.
+
+## Database Schema
+
+Providers.config_json is a JSON object that contains the configuration for the provider.
+
+For LocalCSV provider, the config_json is:
+
+```json
+{
+    "data_dir": "/path/to/data/dir"
+}
+```
+
+For GoCardless provider, the config_json is:
+
+```json
+{
+    "secret_id": "secret_id",
+    "secret_key": "secret_key"
+}
+```
+
+``` mermaid
+erDiagram
+    PROVIDERS ||--o{ BANK_ACCOUNT_PROVIDERS : connected_to
+    BANK_ACCOUNTS ||--o{ BANK_ACCOUNT_PROVIDERS : linked_via
+    BANK_ACCOUNTS ||--o{ TRANSACTIONS : owns
+    TRANSACTIONS ||--o{ TRANSACTION_TAGS : tagged
+    TAGS ||--o{ TRANSACTION_TAGS : classifies
+
+    PROVIDERS {
+        int id PK
+        string name
+        string config_json
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+
+    BANK_ACCOUNTS {
+        int id PK
+        string name
+        string iban
+        string bic
+        string owner_name
+        string currency_code
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+
+    BANK_ACCOUNT_PROVIDERS {
+        int id PK
+        int bank_account_id FK
+        int provider_id FK
+        string bank_connection_id
+        string last_synced_at
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+
+    TRANSACTIONS {
+        int id PK
+        int bank_account_id FK
+        string booking_date
+        string value_date
+        string currency_code
+        string booking_text
+        string remittance_information
+        string debtor_name
+        string debtor_iban
+        string debtor_bic
+        string creditor_name
+        string creditor_iban
+        string creditor_bic
+        string mandate_reference
+        long amount_minor
+        long balance_after_minor
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+
+    TAGS {
+        int id PK
+        string name
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+
+    TRANSACTION_TAGS {
+        int transaction_id PK, FK
+        int tag_id PK, FK
+        string created_at
+        string updated_at
+        string deleted_at
+    }
+```
+    

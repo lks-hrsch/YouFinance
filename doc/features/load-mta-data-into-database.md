@@ -64,23 +64,27 @@ A transaction block is separated by a single line containing:
 
 The imported data shall be inserted into the `transactions` table:
 
-```rust
-diesel::table! {
-    transactions (id) {
-        id -> Integer,
-        title -> Text,
-        debitor_name -> Nullable<Text>,
-        debitor_iban -> Nullable<Text>,
-        debitor_bic -> Nullable<Text>,
-        creditor_name -> Nullable<Text>,
-        creditor_iban -> Nullable<Text>,
-        creditor_bic -> Nullable<Text>,
-        amount -> Double,
-        currency -> Text,
-        date -> Text,
-        remittance_information -> Nullable<Text>,
-        account_id -> Integer,
-    }
+```
+TRANSACTIONS {
+    id                   PK
+    bank_account_id      FK -> BANK_ACCOUNTS.id
+    booking_date         text
+    value_date           text (nullable)
+    currency_code        text
+    booking_text         text (nullable)
+    remittance_information text (nullable)
+    debtor_name          text (nullable)
+    debtor_iban          text (nullable)
+    debtor_bic           text (nullable)
+    creditor_name        text (nullable)
+    creditor_iban        text (nullable)
+    creditor_bic         text (nullable)
+    mandate_reference    text (nullable)
+    amount_minor         integer
+    balance_after_minor  integer (nullable)
+    created_at           text
+    updated_at           text
+    deleted_at           text (nullable)
 }
 ```
 
@@ -104,23 +108,24 @@ The following MTA values shall be mapped to the database fields:
 
 | MTA Source | Database Column |
 |------------|-----------------|
-| `:25:` account identification | debitor_iban or source account mapping |
-| `:61:` booking date | date |
-| `:61:` amount | amount |
-| `:61:` currency inferred from surrounding statement block (`:60F:` / `:62F:`) | currency |
-| `:86:?00...` transaction type text | title |
-| `:86:?32...` counterpart name | creditor_name |
-| `:86:?31...` counterpart IBAN | creditor_iban |
-| `:86:?30...` counterpart BIC | creditor_bic |
-| `:86:?2x...SVWZ+...` remittance information | remittance_information |
+| `:61:` booking date (`YYMMDD`) | `booking_date` |
+| `:61:` value date (`MMDD` or `YYMMDD`) | `value_date` |
+| `:61:` amount | `amount_minor` |
+| `:61:` currency inferred from (`:60F:` / `:62F:`) | `currency_code` |
+| `:86:?00...` transaction type text | `booking_text` |
+| `:86:?32...` counterpart name | `creditor_name` |
+| `:86:?31...` counterpart IBAN | `creditor_iban` |
+| `:86:?30...` counterpart BIC | `creditor_bic` |
+| `:86:?2x...SVWZ+...` remittance information | `remittance_information` |
+| *(account context)* | `bank_account_id` | resolved from the linked `bank_accounts` record |
 
 ## Interpretation Rules
 
 Because MTA files do not provide the fields in exactly the same shape as the CSV import, the importer shall interpret the data as follows.
 
-### title
+### booking_text
 
-The `title` field shall be filled from the transaction type in the `:86:` segment.
+The `booking_text` field shall be filled from the transaction type in the `:86:` segment.
 
 Examples:
 - `EINZUGSERMAECHTIGUNG`
@@ -129,9 +134,11 @@ Examples:
 
 This is usually encoded in `?00`.
 
-### date
+### booking_date and value_date
 
-The `date` field shall be taken from the `:61:` tag.
+The `booking_date` field shall be taken from the `:61:` tag (first 6 digits: `YYMMDD`).
+
+The `value_date` field shall be taken from the next 4 digits in `:61:` (`MMDD`, year inferred from statement context).
 
 Example:
 
@@ -139,34 +146,31 @@ Example:
 :61:2401100110DR46,55NDDTKREF+
 ```
 
-The booking date is `240110`, which corresponds to:
+- Booking date: `240110` → `2024-01-10`
+- Value date: `0110` → `2024-01-10`
+
+The importer shall convert dates to the format:
 
 ```text
-10.01.2024
+YYYY-MM-DD
 ```
 
-The importer shall convert the date to the format:
+### amount_minor
 
-```text
-DD.MM.YYYY
-```
-
-### amount
-
-The `amount` field shall be taken from the `:61:` tag.
+The `amount_minor` field shall be taken from the `:61:` tag and stored as an integer in minor currency units (e.g. cents).
 
 Examples:
-- `DR46,55` means `-46.55`
-- `CR28,00` means `28.00`
+- `DR46,55` means `-4655`
+- `CR28,00` means `2800`
 
 Rules:
-- `DR` indicates a debit and shall be stored as a negative number
-- `CR` indicates a credit and shall be stored as a positive number
-- the comma decimal separator shall be converted to a dot for storage as `Double`
+- `DR` indicates a debit and shall be stored as a negative integer
+- `CR` indicates a credit and shall be stored as a positive integer
+- the comma decimal separator shall be removed and the value scaled to minor units
 
-### currency
+### currency_code
 
-The `currency` field shall be determined from the statement currency in `:60F:` or `:62F:`.
+The `currency_code` field shall be determined from the statement currency in `:60F:` or `:62F:`.
 
 Example:
 
@@ -194,16 +198,16 @@ The `creditor_iban` field shall be extracted from `:86:?31...`.
 
 The `creditor_bic` field shall be extracted from `:86:?30...`.
 
-### debitor fields
+### debtor fields
 
 The source account in `:25:` identifies the account from which the transaction statement originates.
 
 Because `:25:` usually contains a local account number representation instead of a full IBAN, the exact mapping must be defined by the implementation.
 
 Possible handling:
-- map `:25:` to the account configured by `account_id`
-- optionally derive `debitor_iban` from account configuration
-- optionally derive `debitor_name` and `debitor_bic` from account metadata rather than from the MTA file itself
+- map `:25:` to the account configured by `bank_account_id`
+- optionally derive `debtor_iban` from account configuration
+- optionally derive `debtor_name` and `debtor_bic` from account metadata rather than from the MTA file itself
 
 ## Notes on MTA Subfields
 
@@ -259,20 +263,20 @@ The importer shall apply the following transformations:
 
 ### Date
 - Source format in `:61:`: `YYMMDD`
-- Target format: `DD.MM.YYYY`
+- Target format: `YYYY-MM-DD`
 - Example:
   - source: `240110`
-  - target: `10.01.2024`
+  - target: `2024-01-10`
 
 ### Amount
 - Source format uses a comma as decimal separator
-- `DR` values shall be negative
-- `CR` values shall be positive
+- `DR` values shall be stored as negative integers in minor currency units
+- `CR` values shall be stored as positive integers in minor currency units
 - Example:
   - source: `DR46,55`
-  - database: `-46.55`
+  - database (`amount_minor`): `-4655`
   - source: `CR28,00`
-  - database: `28.00`
+  - database (`amount_minor`): `2800`
 
 ### Empty Values
 - Missing optional values shall be stored as `NULL` for nullable database columns.
@@ -287,13 +291,14 @@ The importer shall apply the following transformations:
 2. The system shall parse MTA files as tagged text files.
 3. The system shall split files into transaction blocks separating periods.
 4. The system shall extract one transaction record per `:61:` / `:86:` pair dynamically, supporting multiple sequential pairs clustered within a single `-` statement block.
-5. The system shall parse `DR` and `CR` indicators correctly to determine the sign of the amount.
-6. The system shall extract currency from the statement balance information.
-7. The system shall reconstruct structured `:86:` data across line breaks and concatenate continuous remittance subfields split across arbitrary `?2x` lengths.
-8. The system shall transform and import each transaction into the `transactions` table.
-9. The system shall store missing optional values as `NULL`.
-10. The system shall log or report transactions that cannot be imported due to invalid format or missing required values.
-11. The system should continue processing remaining transactions if a single transaction fails, unless configured otherwise.
+5. The system shall parse `DR` and `CR` indicators correctly to determine the sign of `amount_minor`.
+6. The system shall convert amounts to integer minor currency units (e.g. cents).
+7. The system shall extract `currency_code` from the statement balance information.
+8. The system shall reconstruct structured `:86:` data across line breaks and concatenate continuous remittance subfields split across arbitrary `?2x` lengths.
+9. The system shall transform and import each transaction into the `transactions` table.
+10. The system shall store missing optional values as `NULL`.
+11. The system shall log or report transactions that cannot be imported due to invalid format or missing required values.
+12. The system should continue processing remaining transactions if a single transaction fails, unless configured otherwise.
 
 ## Parsing Rules
 
@@ -311,29 +316,31 @@ The importer shall use the following parsing rules for the provided MTA variant:
 
 The following points should be clarified before implementation:
 
-1. **How is `account_id` determined?**  
-   The target table requires `account_id`, but the MTA file does not directly provide it in a usable database form.
+1. **How is `bank_account_id` determined?**  
+   The target table requires `bank_account_id`, but the MTA file does not directly provide it in a usable database form.
 
 2. **How should `:25:` be mapped?**  
    The source account may not be given as IBAN, but as bank code/account number.
 
-3. **Should the debitor/creditor roles depend on transaction direction?**  
+3. **Should the debtor/creditor roles depend on transaction direction?**  
    For outgoing transactions (`DR`), the counterpart is usually the creditor.  
-   For incoming transactions (`CR`), the counterpart may semantically be the debitor.  
+   For incoming transactions (`CR`), the counterpart may semantically be the debtor.  
    If a strict accounting model is required, the mapping rules may need to depend on transaction type.
 
 4. **Should duplicate imports be prevented?**  
    If the same MTA file is imported twice, should duplicate transactions be inserted or skipped?
 
-5. **Should balance information be stored in a separate table?**  
-   The MTA file contains opening and closing balances that may be useful later.
+5. **Should `balance_after_minor` be populated from MTA data?**  
+   The MTA file contains opening (`:60F:`) and closing (`:62F:`) balances per statement block. The balance after each transaction could be derived if needed.
 
 ## Suggested Acceptance Criteria
 
 - Given a valid MTA file in the expected folder structure, the importer inserts all valid transactions into `transactions`.
-- The importer correctly extracts date, amount, currency, and transaction details from the MTA content.
-- Debit transactions are stored with negative amounts.
-- Credit transactions are stored with positive amounts.
+- The importer correctly extracts `booking_date`, `amount_minor`, `currency_code`, and transaction details from the MTA content.
+- Debit transactions are stored with negative `amount_minor`.
+- Credit transactions are stored with positive `amount_minor`.
+- Dates are stored in `YYYY-MM-DD` format.
+- Amounts are stored as integer minor currency units (e.g. `-4655` for `-46.55 EUR`).
 - Structured `:86:` content is correctly reconstructed across multiple lines.
 - Counterpart name, IBAN, and BIC are extracted when present.
 - Remittance information is concatenated correctly from split `SVWZ+` fragments.
