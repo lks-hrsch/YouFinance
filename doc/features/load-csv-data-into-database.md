@@ -11,8 +11,7 @@ CSV files shall be stored in the following directory structure:
 ```text
 <data_folder>/
 └── <provider_documents>/
-    └── <year>/
-        └── <document_name>.csv
+    └── <year>_<document_name>.csv
 ```
 
 ### Example
@@ -20,8 +19,7 @@ CSV files shall be stored in the following directory structure:
 ```text
 data/
 └── bank_provider/
-    └── 2024/
-        └── account_transactions.csv
+    └── 2024_account_transactions.csv
 ```
 
 ## CSV Format
@@ -89,8 +87,6 @@ The following CSV columns shall be mapped to the database fields:
 | Waehrung | currency_code | |
 | Saldo nach Buchung | balance_after_minor | converted from German decimal to integer minor units |
 | *(account context)* | bank_account_id | resolved from the linked `bank_accounts` record |
-
-
 
 ### Still unmapped
 

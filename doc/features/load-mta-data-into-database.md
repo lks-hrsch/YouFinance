@@ -10,8 +10,7 @@ MTA files shall be stored in the following directory structure:
 ```text
 <data_folder>/
 └── <provider_documents>/
-    └── <year>/
-        └── <document_name>.mta
+    └── <year>_<document_name>.mta
 ```
 
 ### Example
@@ -19,8 +18,7 @@ MTA files shall be stored in the following directory structure:
 ```text
 data/
 └── bank_provider/
-    └── 2024/
-        └── account_transactions.mta
+    └── 2024_account_transactions.mta
 ```
 
 ## MTA Format
@@ -128,6 +126,7 @@ Because MTA files do not provide the fields in exactly the same shape as the CSV
 The `booking_text` field shall be filled from the transaction type in the `:86:` segment.
 
 Examples:
+
 - `EINZUGSERMAECHTIGUNG`
 - `GUTSCHRIFT`
 - `SEPA-Ueberweisung`
@@ -160,10 +159,12 @@ YYYY-MM-DD
 The `amount_minor` field shall be taken from the `:61:` tag and stored as an integer in minor currency units (e.g. cents).
 
 Examples:
+
 - `DR46,55` means `-4655`
 - `CR28,00` means `2800`
 
 Rules:
+
 - `DR` indicates a debit and shall be stored as a negative integer
 - `CR` indicates a credit and shall be stored as a positive integer
 - the comma decimal separator shall be removed and the value scaled to minor units
@@ -205,6 +206,7 @@ The source account in `:25:` identifies the account from which the transaction s
 Because `:25:` usually contains a local account number representation instead of a full IBAN, the exact mapping must be defined by the implementation.
 
 Possible handling:
+
 - map `:25:` to the account configured by `bank_account_id`
 - optionally derive `debtor_iban` from account configuration
 - optionally derive `debtor_name` and `debtor_bic` from account metadata rather than from the MTA file itself
@@ -262,6 +264,7 @@ These fields shall be ignored unless the schema is extended.
 The importer shall apply the following transformations:
 
 ### Date
+
 - Source format in `:61:`: `YYMMDD`
 - Target format: `YYYY-MM-DD`
 - Example:
@@ -269,6 +272,7 @@ The importer shall apply the following transformations:
   - target: `2024-01-10`
 
 ### Amount
+
 - Source format uses a comma as decimal separator
 - `DR` values shall be stored as negative integers in minor currency units
 - `CR` values shall be stored as positive integers in minor currency units
@@ -279,9 +283,11 @@ The importer shall apply the following transformations:
   - database (`amount_minor`): `2800`
 
 ### Empty Values
+
 - Missing optional values shall be stored as `NULL` for nullable database columns.
 
 ### Multi-line detail fields
+
 - `:86:` continuation lines shall be merged before parsing
 - split remittance text shall be concatenated into one string
 
