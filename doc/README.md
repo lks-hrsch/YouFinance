@@ -43,8 +43,12 @@ erDiagram
     PROVIDERS ||--o{ BANK_ACCOUNT_PROVIDERS : connected_to
     BANK_ACCOUNTS ||--o{ BANK_ACCOUNT_PROVIDERS : linked_via
     BANK_ACCOUNTS ||--o{ TRANSACTIONS : owns
+
     TRANSACTIONS ||--o{ TRANSACTION_TAGS : tagged
     TAGS ||--o{ TRANSACTION_TAGS : classifies
+
+    TRANSACTIONS ||--o{ TRANSACTION_PROVIDERS : CHANGEME
+    PROVIDERS ||--o{ TRANSACTION_PROVIDERS : CHANGEME
 
     PROVIDERS {
         int id PK
@@ -112,8 +116,13 @@ erDiagram
         int transaction_id PK, FK
         int tag_id PK, FK
         string created_at
-        string updated_at
+        string deleted_at
+    }
+
+    TRANSACTION_PROVIDERS {
+        int transaction_id PK, FK
+        int provider_id PK, FK
+        string created_at
         string deleted_at
     }
 ```
-    

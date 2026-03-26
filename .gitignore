@@ -22,3 +22,9 @@ result-*
 *.njsproj
 *.sln
 *.sw?
+
+# claude
+.claude/
+
+# test data
+test-data/
