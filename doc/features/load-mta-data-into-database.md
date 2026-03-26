@@ -285,6 +285,10 @@ The importer shall apply the following transformations:
 - `:86:` continuation lines shall be merged before parsing
 - split remittance text shall be concatenated into one string
 
+## Provider Tracking
+
+Each imported transaction must also insert a row into the `TRANSACTION_PROVIDERS` table linking the transaction to the MTA file's provider. This allows tracking of which provider sourced each transaction and enables reconciliation workflows where transactions from multiple sources may need to be cross-referenced.
+
 ## Functional Requirements
 
 1. The system shall recursively scan the configured data folder for MTA files matching the expected directory structure.
@@ -299,6 +303,7 @@ The importer shall apply the following transformations:
 10. The system shall store missing optional values as `NULL`.
 11. The system shall log or report transactions that cannot be imported due to invalid format or missing required values.
 12. The system should continue processing remaining transactions if a single transaction fails, unless configured otherwise.
+13. The system shall insert a corresponding row into `TRANSACTION_PROVIDERS` for each imported transaction, linking it to the MTA file's provider.
 
 ## Parsing Rules
 

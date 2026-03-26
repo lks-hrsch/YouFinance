@@ -47,8 +47,8 @@ erDiagram
     TRANSACTIONS ||--o{ TRANSACTION_TAGS : tagged
     TAGS ||--o{ TRANSACTION_TAGS : classifies
 
-    TRANSACTIONS ||--o{ TRANSACTION_PROVIDERS : CHANGEME
-    PROVIDERS ||--o{ TRANSACTION_PROVIDERS : CHANGEME
+    TRANSACTIONS ||--o{ TRANSACTION_PROVIDERS : sourced_from
+    PROVIDERS ||--o{ TRANSACTION_PROVIDERS : imported_via
 
     PROVIDERS {
         int id PK
@@ -126,3 +126,7 @@ erDiagram
         string deleted_at
     }
 ```
+
+### TRANSACTION_PROVIDERS Table
+
+The `TRANSACTION_PROVIDERS` table links each imported transaction to the provider that sourced it. This enables tracking of transaction lineage and supports reconciliation workflows where transactions from different providers (e.g., CSV imports, GoCardless API, MTA files) may be cross-referenced. When a transaction is imported from any provider, a corresponding row must be inserted into `TRANSACTION_PROVIDERS` with the transaction ID and provider ID.

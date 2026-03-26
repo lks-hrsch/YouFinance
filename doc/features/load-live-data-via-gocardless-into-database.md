@@ -277,8 +277,9 @@ erDiagram
 |-------|-------------------|
 | `bank_accounts.name` | `account.name` |
 | `bank_accounts.iban` | `account.iban` |
+| `bank_accounts.owner_name` | `account.ownerName` |
 | `bank_accounts.currency_code` | `account.currency` |
-| `bank_account_providers.bank_connection_id` | requisition ID / account ID |
+| `bank_account_providers.bank_connection_id` | GoCardless account UUID (from the `accounts` array in the requisition response) |
 
 ### `transactions` table
 
@@ -399,6 +400,12 @@ The manual null-matching is necessary because SQLite UNIQUE constraints do not c
 
 ---
 
+## Provider Tracking
+
+Each imported transaction must also insert a row into the `TRANSACTION_PROVIDERS` table linking the transaction to the GoCardless provider. This allows tracking of which provider sourced each transaction and enables reconciliation workflows where transactions from different providers (e.g., CSV imports, GoCardless API, MTA files) may be cross-referenced.
+
+---
+
 ## Functional Requirements
 
 1. The system shall authenticate with GoCardless using stored `secret_id` and `secret_key`.
@@ -410,3 +417,4 @@ The manual null-matching is necessary because SQLite UNIQUE constraints do not c
 7. The system shall skip duplicate transactions during sync using a manual field-matching strategy.
 8. The system shall support syncing all accounts, a provider's accounts, or a single account independently.
 9. Only `booked` transactions shall be imported; `pending` transactions shall be ignored.
+10. The system shall insert a corresponding row into `TRANSACTION_PROVIDERS` for each imported transaction, linking it to the GoCardless provider.

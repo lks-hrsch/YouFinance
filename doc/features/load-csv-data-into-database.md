@@ -78,7 +78,7 @@ The following CSV columns shall be mapped to the database fields:
 | Valutadatum | value_date | converted to `YYYY-MM-DD` |
 | Buchungstext | booking_text | |
 | Verwendungszweck | remittance_information | |
-| Bankname Auftragskonto | debtor_name | |
+| Bezeichnung Auftragskonto | debtor_name | |
 | IBAN Auftragskonto | debtor_iban | |
 | BIC Auftragskonto | debtor_bic | |
 | Name Zahlungsbeteiligter | creditor_name | |
@@ -96,7 +96,6 @@ The following CSV columns shall be mapped to the database fields:
 
 The following CSV columns are still not represented in the target table:
 
-- `Bezeichnung Auftragskonto` — the account's own name; used to resolve the account context, not stored directly as a transaction field
 - `Bemerkung`
 - `Gekennzeichneter Umsatz`
 - `Glaeubiger ID`
@@ -131,6 +130,10 @@ The importer shall apply the following transformations:
 
 - Empty CSV fields shall be stored as `NULL` for nullable database columns.
 
+## Provider Tracking
+
+Each imported transaction must also insert a row into the `TRANSACTION_PROVIDERS` table linking the transaction to the LocalCSV provider. This allows tracking of which provider sourced each transaction and enables reconciliation workflows where transactions from multiple sources may need to be cross-referenced.
+
 ## Functional Requirements
 
 1. The system shall recursively scan the configured data folder for CSV files matching the expected directory structure.
@@ -143,3 +146,4 @@ The importer shall apply the following transformations:
 8. The system shall store empty optional values as `NULL`.
 9. The system shall log or report rows that cannot be imported due to invalid format or missing required values.
 10. The system should continue processing remaining rows if a single row fails, unless configured otherwise.
+11. The system shall insert a corresponding row into `TRANSACTION_PROVIDERS` for each imported transaction, linking it to the LocalCSV provider.
