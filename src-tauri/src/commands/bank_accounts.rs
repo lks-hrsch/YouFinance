@@ -244,7 +244,7 @@ pub async fn add_local_csv_account<'a>(
     fs::create_dir_all(&account_path)
         .map_err(|e| format!("Failed to create data directory: {}", e))?;
 
-    info!("Created data directory at {:?}", account_path);
+    info!("Created bank account data directory");
 
     // Insert the bank account into the database
     let new_bank_account = NewBankAccount {
