@@ -81,7 +81,7 @@ impl BankingApi for LocalCSV {
     }
 
     async fn get_account_transactions(&self, account_id: &str) -> Result<BankTransactions, ApiError> {
-        debug!("LocalCSV::get_account_transactions for account: {}", account_id);
+        debug!("LocalCSV::get_account_transactions for an account");
 
         let mut booked_transactions = vec![];
 
