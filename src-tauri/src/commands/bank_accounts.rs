@@ -436,7 +436,7 @@ pub async fn open_account_directory(
     bank_name: String,
     iban: String,
 ) -> Result<(), String> {
-    debug!("commands::bank_accounts::open_account_directory for {}/{}", bank_name, iban);
+    debug!("commands::bank_accounts::open_account_directory for bank: {}", bank_name);
     use tauri_plugin_opener::OpenerExt;
 
     let app_data_dir = app_handle.path().app_data_dir().map_err(|e| e.to_string())?;
