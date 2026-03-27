@@ -122,9 +122,9 @@ async fn sync_accounts_internal(
                 }
                 DeduplicationOutcome::CrossAccount { existing_id, existing_account_id } => {
                     debug!(
-                        "cross-account dedup: {} {}{} matches existing id={} (account_id={})",
+                        "cross-account dedup: {} {}{} matches existing id={}",
                         transaction.booking_date, transaction.amount_minor, transaction.currency_code,
-                        existing_id, existing_account_id
+                        existing_id
                     );
                     upsert_provider_link(connection, existing_id, provider_data.id)?;
                 }
