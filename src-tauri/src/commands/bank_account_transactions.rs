@@ -310,7 +310,7 @@ pub async fn sync_account(
     database_state: State<'_, Mutex<DatabaseState>>,
     target_account_id: i32,
 ) -> Result<(), String> {
-    debug!("commands::bank_account_transactions::sync_account: {}", target_account_id);
+    debug!("commands::bank_account_transactions::sync_account");
     use crate::schema::bank_account_providers::dsl::*;
 
     let filtered_accounts: Vec<BankAccountProvider>;
