@@ -80,7 +80,7 @@ impl BankingApi for LocalMTA {
     }
 
     async fn get_account_transactions(&self, account_id: &str) -> Result<BankTransactions, ApiError> {
-        debug!("LocalMTA::get_account_transactions for account: {}", account_id);
+        debug!("LocalMTA::get_account_transactions called");
 
         let mut booked_transactions = vec![];
 
