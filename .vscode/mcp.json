@@ -9,6 +9,13 @@
     },
     "context7": {
       "url": "https://mcp.context7.com/mcp"
+    },
+    "token-optimizer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "token-optimizer-mcp"
+      ],
     }
   }
 }
