@@ -118,6 +118,13 @@ pub struct GoCardlessConfig {
     pub secret_key: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct GoCardlessApiError {
+    pub summary: Option<String>,
+    pub detail: Option<String>,
+    pub status_code: Option<u16>,
+}
+
 #[derive(Debug)]
 pub struct GoCardless {
     pub base_url: String,

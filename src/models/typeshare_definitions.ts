@@ -153,5 +153,6 @@ export interface TransactionWithProviders {
 export enum BankingProviders {
 	GoCardless = "GoCardless",
 	LocalCSV = "LocalCSV",
+	LocalMTA = "LocalMTA",
 }
 

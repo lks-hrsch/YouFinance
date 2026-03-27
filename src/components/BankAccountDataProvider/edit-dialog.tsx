@@ -17,9 +17,9 @@ import { Label } from "@/components/ui/label";
 import type { Provider } from "@/models/typeshare_definitions";
 
 interface EditDialogProps {
-  provider: Provider | null;
   onClose: () => void;
   onSaved: () => void;
+  provider: Provider | null;
 }
 
 const ProviderEditDialog: React.FC<EditDialogProps> = ({
@@ -52,7 +52,9 @@ const ProviderEditDialog: React.FC<EditDialogProps> = ({
   }, [provider]);
 
   const handleSave = async () => {
-    if (!provider) return;
+    if (!provider) {
+      return;
+    }
 
     setError("");
     setIsSaving(true);
@@ -78,7 +80,7 @@ const ProviderEditDialog: React.FC<EditDialogProps> = ({
   const isGoCardless = provider?.name === "GoCardless";
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => !isSaving && onClose()}>
+    <Dialog onOpenChange={() => !isSaving && onClose()} open={isOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit {provider?.name} Provider</DialogTitle>
@@ -132,27 +134,27 @@ const ProviderEditDialog: React.FC<EditDialogProps> = ({
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+              <div className="rounded border border-red-200 bg-red-50 p-3 text-red-700 text-sm">
                 {error}
               </div>
             )}
 
-            <div className="flex gap-2 justify-end pt-2">
+            <div className="flex justify-end gap-2 pt-2">
               <Button
+                disabled={isSaving}
                 onClick={onClose}
                 type="button"
                 variant="outline"
-                disabled={isSaving}
               >
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={isSaving}>
+              <Button disabled={isSaving} onClick={handleSave}>
                 {isSaving ? "Saving..." : "Save"}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="flex gap-2 justify-end pt-2">
+          <div className="flex justify-end gap-2 pt-2">
             <Button onClick={onClose} variant="outline">
               Close
             </Button>

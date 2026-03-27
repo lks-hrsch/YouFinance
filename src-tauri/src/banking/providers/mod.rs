@@ -1,5 +1,6 @@
 pub mod gocardless;
 pub mod local_csv;
+pub mod local_mta;
 
 use std::fmt;
 
@@ -18,6 +19,7 @@ use super::trait_banking_api::BankingApi;
 pub enum BankingProviders {
     GoCardless,
     LocalCSV,
+    LocalMTA,
 }
 
 impl fmt::Display for BankingProviders {
@@ -28,6 +30,7 @@ impl fmt::Display for BankingProviders {
             match self {
                 BankingProviders::GoCardless => "GoCardless",
                 BankingProviders::LocalCSV => "LocalCSV",
+                BankingProviders::LocalMTA => "LocalMTA",
             }
         )
     }
@@ -36,6 +39,7 @@ impl fmt::Display for BankingProviders {
 pub enum ProviderInstance {
     GoCardless(gocardless::structs::GoCardless),
     LocalCSV(local_csv::LocalCSV),
+    LocalMTA(local_mta::LocalMTA),
 }
 
 impl BankingApi for ProviderInstance {
@@ -43,6 +47,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.get_access_token().await,
             Self::LocalCSV(l) => l.get_access_token().await,
+            Self::LocalMTA(m) => m.get_access_token().await,
         }
     }
 
@@ -53,6 +58,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.get_banks_by_country(country).await,
             Self::LocalCSV(l) => l.get_banks_by_country(country).await,
+            Self::LocalMTA(m) => m.get_banks_by_country(country).await,
         }
     }
 
@@ -64,6 +70,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.connect_bank(redirect, institution_id).await,
             Self::LocalCSV(l) => l.connect_bank(redirect, institution_id).await,
+            Self::LocalMTA(m) => m.connect_bank(redirect, institution_id).await,
         }
     }
 
@@ -71,6 +78,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.disconnect_bank(bank_connection_id).await,
             Self::LocalCSV(l) => l.disconnect_bank(bank_connection_id).await,
+            Self::LocalMTA(m) => m.disconnect_bank(bank_connection_id).await,
         }
     }
 
@@ -81,6 +89,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.get_bank_accounts(bank_connection_id).await,
             Self::LocalCSV(l) => l.get_bank_accounts(bank_connection_id).await,
+            Self::LocalMTA(m) => m.get_bank_accounts(bank_connection_id).await,
         }
     }
 
@@ -91,6 +100,7 @@ impl BankingApi for ProviderInstance {
         match self {
             Self::GoCardless(g) => g.get_account_transactions(account_id).await,
             Self::LocalCSV(l) => l.get_account_transactions(account_id).await,
+            Self::LocalMTA(m) => m.get_account_transactions(account_id).await,
         }
     }
 }
@@ -100,6 +110,7 @@ impl BankingProviders {
         vec![
             BankingProviders::GoCardless.to_string(),
             BankingProviders::LocalCSV.to_string(),
+            BankingProviders::LocalMTA.to_string(),
         ]
     }
 
@@ -107,6 +118,7 @@ impl BankingProviders {
         match str {
             "GoCardless" => Some(BankingProviders::GoCardless),
             "LocalCSV" => Some(BankingProviders::LocalCSV),
+            "LocalMTA" => Some(BankingProviders::LocalMTA),
             _ => None,
         }
     }
@@ -134,6 +146,11 @@ impl BankingProviders {
             BankingProviders::LocalCSV => {
                 Ok(ProviderInstance::LocalCSV(
                     crate::banking::providers::local_csv::LocalCSV::new(app_data_path)
+                ))
+            }
+            BankingProviders::LocalMTA => {
+                Ok(ProviderInstance::LocalMTA(
+                    crate::banking::providers::local_mta::LocalMTA::new(app_data_path)
                 ))
             }
         }

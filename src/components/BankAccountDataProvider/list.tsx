@@ -114,9 +114,9 @@ const BankAccountDataProviderList: React.FC = () => {
       </Card>
 
       <ProviderEditDialog
-        provider={editingProvider}
         onClose={() => setEditingProvider(null)}
         onSaved={fetchProviders}
+        provider={editingProvider}
       />
     </div>
   );

@@ -85,7 +85,10 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
   }, [fetchAccounts, refreshTrigger]);
 
   const handleDelete = (item: BankAccountWithProvider) => {
-    if (item.provider_name === "LocalCSV") {
+    if (
+      item.provider_name === "LocalCSV" ||
+      item.provider_name === "LocalMTA"
+    ) {
       invoke("delete_bank_account", { accountId: item.bank_account.id })
         .then(() => fetchAccounts())
         .catch((error) =>
@@ -164,7 +167,9 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
               <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wider">
                 {firstItem.provider_name === "LocalCSV"
                   ? "Local CSV Provider"
-                  : `Bank Connection: ${bankConnectionId}`}
+                  : firstItem.provider_name === "LocalMTA"
+                    ? "Local MTA Provider"
+                    : `Bank Connection: ${bankConnectionId}`}
               </h3>
               <Button
                 className="h-8 gap-2 text-xs"
@@ -201,7 +206,11 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
                   </thead>
                   <tbody>
                     {items.map((item, index) => {
-                      const { bank_account, bank_account_provider, provider_name } = item;
+                      const {
+                        bank_account,
+                        bank_account_provider,
+                        provider_name,
+                      } = item;
                       const isLast = index === items.length - 1;
                       const classes = isLast
                         ? "p-4"
@@ -240,7 +249,9 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
                           </td>
                           <td className={classes}>
                             <span className="font-normal text-slate-600 text-sm">
-                              {getRelativeTime(bank_account_provider.last_synced_at)}
+                              {getRelativeTime(
+                                bank_account_provider.last_synced_at
+                              )}
                             </span>
                           </td>
                           <td className={classes}>
@@ -248,7 +259,9 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
                               <Button
                                 className="size-8 text-slate-700 hover:text-blue-600"
                                 disabled={isSyncingAccount}
-                                onClick={() => handleSyncAccount(bank_account.id)}
+                                onClick={() =>
+                                  handleSyncAccount(bank_account.id)
+                                }
                                 size="icon"
                                 title="Sync Transactions"
                                 variant="ghost"
@@ -257,7 +270,8 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({
                                   className={`size-4 ${isSyncingAccount ? "animate-spin" : ""}`}
                                 />
                               </Button>
-                              {provider_name === "LocalCSV" && (
+                              {(provider_name === "LocalCSV" ||
+                                provider_name === "LocalMTA") && (
                                 <Button
                                   className="size-8 text-slate-700 hover:text-emerald-600"
                                   onClick={() => handleOpenFolder(item)}

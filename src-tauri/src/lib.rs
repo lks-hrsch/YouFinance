@@ -41,6 +41,7 @@ pub fn run() {
             update_banking_provider,
             delete_banking_provider,
             add_local_csv_account,
+            add_local_mta_account,
             delete_bank_account,
             open_account_directory,
         ])

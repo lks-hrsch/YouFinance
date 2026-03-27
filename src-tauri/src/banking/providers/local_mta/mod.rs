@@ -7,19 +7,19 @@ use super::super::{
     trait_banking_api::BankingApi,
 };
 use crate::banking::providers::gocardless::structs::*;
-use crate::banking::parsers::csv::parse_csv;
+use crate::banking::parsers::mta::parse_mta;
 
-pub struct LocalCSV {
+pub struct LocalMTA {
     pub data_dir: PathBuf,
 }
 
-impl LocalCSV {
+impl LocalMTA {
     pub fn new(data_dir: PathBuf) -> Self {
         Self { data_dir }
     }
 
-    /// Internal recursive search for CSV files associated with an account ID.
-    fn find_csv_files_recursive(&self, dir: &std::path::Path, account_id: &str, depth: usize, csv_files: &mut Vec<PathBuf>) {
+    /// Internal recursive search for MTA files associated with an account ID.
+    fn find_mta_files_recursive(&self, dir: &std::path::Path, account_id: &str, depth: usize, mta_files: &mut Vec<PathBuf>) {
         if depth > 3 { return; }
 
         if let Ok(entries) = fs::read_dir(dir) {
@@ -27,35 +27,34 @@ impl LocalCSV {
                 let path = entry.path();
                 if path.is_dir() {
                     if path.file_name().is_some_and(|n| n == account_id) {
-                        // Found account dir, collect all CSVs inside it (unlimited depth here)
-                        self.collect_all_csvs(&path, csv_files);
+                        // Found account dir, collect all MTAs inside it (unlimited depth here)
+                        self.collect_all_mtas(&path, mta_files);
                     } else {
                         // Keep searching
-                        self.find_csv_files_recursive(&path, account_id, depth + 1, csv_files);
+                        self.find_mta_files_recursive(&path, account_id, depth + 1, mta_files);
                     }
                 }
             }
         }
     }
 
-    fn collect_all_csvs(&self, dir: &std::path::Path, csv_files: &mut Vec<PathBuf>) {
+    fn collect_all_mtas(&self, dir: &std::path::Path, mta_files: &mut Vec<PathBuf>) {
         if let Ok(entries) = fs::read_dir(dir) {
             for entry in entries.filter_map(|e| e.ok()) {
                 let path = entry.path();
                 if path.is_dir() {
-                    self.collect_all_csvs(&path, csv_files);
-                } else if path.is_file() && path.extension().is_some_and(|ext| ext == "csv") {
-                    csv_files.push(path);
+                    self.collect_all_mtas(&path, mta_files);
+                } else if path.is_file() && path.extension().is_some_and(|ext| ext == "mta") {
+                    mta_files.push(path);
                 }
             }
         }
     }
-
 }
 
-impl BankingApi for LocalCSV {
+impl BankingApi for LocalMTA {
     async fn get_access_token(&self) -> Result<AccessToken, ApiError> {
-        Err(ApiError::Custom("LocalCSV does not support access tokens".into()))
+        Err(ApiError::Custom("LocalMTA does not support access tokens".into()))
     }
 
     async fn get_banks_by_country(&self, _country: &str) -> Result<Vec<Bank>, ApiError> {
@@ -63,7 +62,7 @@ impl BankingApi for LocalCSV {
     }
 
     async fn connect_bank(&self, _redirect: &str, _institution_id: &str) -> Result<BankConnection, ApiError> {
-        Err(ApiError::Custom("LocalCSV does not support connect_bank".into()))
+        Err(ApiError::Custom("LocalMTA does not support connect_bank".into()))
     }
 
     async fn disconnect_bank(&self, _bank_connection_id: &str) -> Result<(), ApiError> {
@@ -72,7 +71,7 @@ impl BankingApi for LocalCSV {
 
     async fn get_bank_accounts(&self, _bank_connection_id: &str) -> Result<BankAccounts, ApiError> {
         Ok(BankAccounts {
-            id: "local_csv".into(),
+            id: "local_mta".into(),
             status: "ready".into(),
             agreements: None,
             accounts: vec![],
@@ -81,22 +80,22 @@ impl BankingApi for LocalCSV {
     }
 
     async fn get_account_transactions(&self, account_id: &str) -> Result<BankTransactions, ApiError> {
-        debug!("LocalCSV::get_account_transactions for account: {}", account_id);
+        debug!("LocalMTA::get_account_transactions for account: {}", account_id);
 
         let mut booked_transactions = vec![];
 
         if self.data_dir.exists() {
-            // Find all CSV files in the data directory recursively (max depth 3)
-            let mut csv_files = Vec::new();
-            self.find_csv_files_recursive(&self.data_dir, account_id, 0, &mut csv_files);
+            // Find all MTA files in the data directory recursively (max depth 3)
+            let mut mta_files = Vec::new();
+            self.find_mta_files_recursive(&self.data_dir, account_id, 0, &mut mta_files);
 
-            for csv_path in csv_files {
-                debug!("Parsing CSV file: {:?}", csv_path);
-                let file = fs::File::open(&csv_path)
-                    .map_err(|e| ApiError::Custom(format!("Failed to open CSV file: {}", e)))?;
+            for mta_path in mta_files {
+                debug!("Parsing MTA file: {:?}", mta_path);
+                let file = fs::File::open(&mta_path)
+                    .map_err(|e| ApiError::Custom(format!("Failed to open MTA file: {}", e)))?;
 
-                let new_transactions = parse_csv(file, 0)
-                    .map_err(|e| ApiError::Custom(format!("Failed to parse CSV: {}", e)))?;
+                let new_transactions = parse_mta(file, 0)
+                    .map_err(|e| ApiError::Custom(format!("Failed to parse MTA: {}", e)))?;
 
                 for nt in new_transactions {
                     booked_transactions.push(Transaction {
@@ -138,4 +137,3 @@ impl BankingApi for LocalCSV {
         })
     }
 }
-

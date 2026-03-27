@@ -101,6 +101,20 @@ export default function SettingsPage() {
     }
   };
 
+  const handleAddLocalMTAAccount = async () => {
+    try {
+      await invoke("add_local_mta_account", {
+        bankName,
+        iban,
+      });
+      setBankName("");
+      setIban("");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (e) {
+      // Error handling done by Tauri
+    }
+  };
+
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
@@ -116,7 +130,7 @@ export default function SettingsPage() {
           <TabsTrigger value="bank-accounts">Bank Accounts</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="providers" className="space-y-4">
+        <TabsContent className="space-y-4" value="providers">
           <BankAccountDataProviderList />
           <Button onClick={openModal}>Add New Provider</Button>
           <BankAccountDataProviderAddModal
@@ -125,7 +139,7 @@ export default function SettingsPage() {
           />
         </TabsContent>
 
-        <TabsContent value="bank-accounts" className="space-y-6">
+        <TabsContent className="space-y-6" value="bank-accounts">
           <BankAccountsList refreshTrigger={refreshTrigger} />
 
           <Card>
@@ -158,10 +172,30 @@ export default function SettingsPage() {
                       value={iban}
                     />
                   </div>
-                  <Button
-                    className="w-full"
-                    onClick={handleAddLocalCSVAccount}
-                  >
+                  <Button className="w-full" onClick={handleAddLocalCSVAccount}>
+                    <Plus className="mr-2 size-4" />
+                    Add Local Account
+                  </Button>
+                </>
+              ) : providerName === "LocalMTA" ? (
+                <>
+                  <div className="space-y-2">
+                    <label className="font-medium text-sm">Bank Name</label>
+                    <Input
+                      onChange={(e) => setBankName(e.target.value)}
+                      placeholder="e.g. MLP"
+                      value={bankName}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-medium text-sm">IBAN</label>
+                    <Input
+                      onChange={(e) => setIban(e.target.value)}
+                      placeholder="e.g. DE12 3456..."
+                      value={iban}
+                    />
+                  </div>
+                  <Button className="w-full" onClick={handleAddLocalMTAAccount}>
                     <Plus className="mr-2 size-4" />
                     Add Local Account
                   </Button>

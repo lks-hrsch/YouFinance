@@ -105,6 +105,20 @@ export default function BankAccountsPage() {
     }
   };
 
+  const handleAddLocalMTAAccount = async () => {
+    try {
+      await invoke("add_local_mta_account", {
+        bankName,
+        iban,
+      });
+      setBankName("");
+      setIban("");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (e) {
+      console.error("Failed to add local account:", e);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -143,6 +157,29 @@ export default function BankAccountsPage() {
                 />
               </div>
               <Button className="w-full" onClick={handleAddLocalCSVAccount}>
+                <Plus className="mr-2 size-4" />
+                Add Local Account
+              </Button>
+            </>
+          ) : providerName === "LocalMTA" ? (
+            <>
+              <div className="space-y-2">
+                <label className="font-medium text-sm">Bank Name</label>
+                <Input
+                  onChange={(e) => setBankName(e.target.value)}
+                  placeholder="e.g. MLP"
+                  value={bankName}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-medium text-sm">IBAN</label>
+                <Input
+                  onChange={(e) => setIban(e.target.value)}
+                  placeholder="e.g. DE12 3456..."
+                  value={iban}
+                />
+              </div>
+              <Button className="w-full" onClick={handleAddLocalMTAAccount}>
                 <Plus className="mr-2 size-4" />
                 Add Local Account
               </Button>
