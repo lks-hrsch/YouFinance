@@ -3,7 +3,7 @@ use std::io::Read;
 
 use crate::banking::utils::normalize_date;
 
-pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTransaction>, String> {
+pub fn parse_mta<R: Read>(mut reader: R, bank_account_id: i32) -> Result<Vec<NewTransaction>, String> {
     let mut contents = String::new();
     reader.read_to_string(&mut contents).map_err(|e| e.to_string())?;
 
@@ -73,7 +73,17 @@ pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTrans
                     let yy = &tag61[0..2];
                     let mm = &tag61[2..4];
                     let dd = &tag61[4..6];
-                    let date_str = format!("{}.{}.20{}", dd, mm, yy);
+                    let booking_date_str = format!("{}.{}.20{}", dd, mm, yy);
+
+                    // Extract value_date if present (chars 7-10 format: MMDD)
+                    let value_date_str = if tag61.len() >= 10 {
+                        let v_mm = &tag61[6..8];
+                        let v_dd = &tag61[8..10];
+                        // Assume same year as booking date
+                        Some(format!("{}.{}.20{}", v_dd, v_mm, yy))
+                    } else {
+                        None
+                    };
 
                     let mut is_dr = true;
                     let mut amount_start = 6;
@@ -100,13 +110,15 @@ pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTrans
                         }
                     }
 
-                    let mut amount_val: f64 = 0.0;
+                    let mut amount_f64: f64 = 0.0;
                     if amount_end > amount_start {
                         let amt_str = tag61[amount_start..amount_end].replace(',', ".");
                         if let Ok(v) = amt_str.parse::<f64>() {
-                            amount_val = if is_dr { -v } else { v };
+                            amount_f64 = if is_dr { -v } else { v };
                         }
                     }
+
+                    let amount_minor: i32 = (amount_f64 * 100.0).round() as i32;
 
                     let mut title = String::new();
                     let mut creditor_name: Option<String> = None;
@@ -152,18 +164,21 @@ pub fn parse_mta<R: Read>(mut reader: R, account_id: i32) -> Result<Vec<NewTrans
                     }
 
                     let new_tx = NewTransaction {
-                        title,
-                        debitor_name: None,
-                        debitor_iban: account_number.clone(),
-                        debitor_bic: None,
+                        booking_text: title,
+                        debtor_name: None,
+                        debtor_iban: account_number.clone(),
+                        debtor_bic: None,
                         creditor_name,
                         creditor_iban,
                         creditor_bic,
-                        amount: amount_val,
-                        currency: currency.clone(),
-                        date: normalize_date(&date_str),
+                        amount_minor,
+                        currency_code: currency.clone(),
+                        booking_date: normalize_date(&booking_date_str),
+                        value_date: value_date_str.as_ref().map(|d| normalize_date(d)),
+                        balance_after_minor: None,
+                        mandate_reference: None,
                         remittance_information: if remittance.is_empty() { None } else { Some(remittance) },
-                        account_id,
+                        bank_account_id,
                     };
 
                     transactions.push(new_tx);
@@ -198,7 +213,7 @@ mod tests {
 -",
         1,
         "EINZUGSERMAECHTIGUNG",
-        -46.55,
+        -4655,
         "2024-01-10",
         Some("Example Payee GmbH"),
         Some("BANKDEFFXXX"),
@@ -211,7 +226,7 @@ mod tests {
 -",
         2,
         "LOHN/GEHALT",
-        1234.56,
+        123456,
         "2024-12-31",
         Some("My Employer"),
         None,
@@ -229,7 +244,7 @@ mod tests {
 -",
         1,
         "EINZUGSERMAECHTIGUNG",
-        -46.55,
+        -4655,
         "2024-01-10",
         Some("Max Mustermann"),
         Some("EXAMXXX"),
@@ -238,24 +253,24 @@ mod tests {
     fn test_parse_mta_parameterized(
         #[case] mta_data: &str,
         #[case] expected_account: i32,
-        #[case] expected_title: &str,
-        #[case] expected_amount: f64,
-        #[case] expected_date: &str,
+        #[case] expected_booking_text: &str,
+        #[case] expected_amount_minor: i32,
+        #[case] expected_booking_date: &str,
         #[case] expected_name: Option<&str>,
         #[case] expected_bic: Option<&str>,
         #[case] expected_iban: Option<&str>,
     ) {
         let reader = Cursor::new(mta_data);
         let result = parse_mta(reader, expected_account).unwrap();
-        
+
         let tx = &result[0]; // Assuming each parameterized case focuses on the first or only tx
-        assert_eq!(tx.title, expected_title);
-        assert_eq!(tx.amount, expected_amount);
-        assert_eq!(tx.date, expected_date);
+        assert_eq!(tx.booking_text, expected_booking_text);
+        assert_eq!(tx.amount_minor, expected_amount_minor);
+        assert_eq!(tx.booking_date, expected_booking_date);
         assert_eq!(tx.creditor_name.as_deref(), expected_name);
         assert_eq!(tx.creditor_bic.as_deref(), expected_bic);
         assert_eq!(tx.creditor_iban.as_deref(), expected_iban);
-        assert_eq!(tx.account_id, expected_account);
+        assert_eq!(tx.bank_account_id, expected_account);
     }
 
     #[test]
@@ -274,9 +289,9 @@ mod tests {
         let reader = Cursor::new(mta_data);
         let result = parse_mta(reader, 1).unwrap();
         assert_eq!(result.len(), 2);
-        assert_eq!(result[0].amount, -46.55);
+        assert_eq!(result[0].amount_minor, -4655);
         assert_eq!(result[0].creditor_name.as_deref(), Some("Example Payee GmbH"));
-        assert_eq!(result[1].amount, 10.0);
+        assert_eq!(result[1].amount_minor, 1000);
         assert_eq!(result[1].creditor_name.as_deref(), Some("A Friend"));
     }
 }

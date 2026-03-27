@@ -98,8 +98,8 @@ impl BankingApi for ProviderInstance {
 impl BankingProviders {
     pub fn list_providers() -> Vec<String> {
         vec![
-            format!("{}", BankingProviders::GoCardless.to_string()),
-            format!("{}", BankingProviders::LocalCSV.to_string()),
+            BankingProviders::GoCardless.to_string(),
+            BankingProviders::LocalCSV.to_string(),
         ]
     }
 
@@ -119,22 +119,22 @@ impl BankingProviders {
         match self {
             BankingProviders::GoCardless => {
                 let provider = crate::schema::providers::table
-                    .filter(crate::schema::providers::title.eq(self.to_string()))
+                    .filter(crate::schema::providers::name.eq(self.to_string()))
                     .first::<crate::model::Provider>(connection)
                     .map_err(|e| e.to_string())?;
 
-                let sid = provider.secret_id.ok_or("Secret ID not found for provider")?;
-                let skey = provider.secret_key.ok_or("Secret Key not found for provider")?;
+                let config: gocardless::structs::GoCardlessConfig = serde_json::from_str(&provider.config_json)
+                    .map_err(|e| format!("Invalid config_json for GoCardless provider: {}", e))?;
 
-                let gocardless = crate::banking::providers::gocardless::structs::GoCardless::new(&sid, &skey)
+                let gocardless = gocardless::structs::GoCardless::new(&config.secret_id, &config.secret_key)
                     .await
                     .map_err(|e| e.to_string())?;
                 Ok(ProviderInstance::GoCardless(gocardless))
             }
             BankingProviders::LocalCSV => {
-                let mut local_csv = crate::banking::providers::local_csv::LocalCSV::new();
-                local_csv.set_data_dir(app_data_path);
-                Ok(ProviderInstance::LocalCSV(local_csv))
+                Ok(ProviderInstance::LocalCSV(
+                    crate::banking::providers::local_csv::LocalCSV::new(app_data_path)
+                ))
             }
         }
     }

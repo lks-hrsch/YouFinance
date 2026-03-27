@@ -213,7 +213,8 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json().await {
+        let text = res.text().await?;
+        match serde_json::from_str::<BankTransactions>(&text) {
             Ok(bank_transactions) => {
                 debug!(
                     "banking::providers::gocardless::get_account_transactions: {:#?}",
@@ -222,7 +223,7 @@ impl BankingApi for GoCardless {
                 Ok(bank_transactions)
             }
             Err(e) => {
-                error!("failed to parse bank transactions: {}", e);
+                error!("failed to parse bank transactions: {}. Raw response: {}", e, text);
                 Err(ApiError::Custom(format!("failed to parse bank transactions: {}", e)))
             }
         }

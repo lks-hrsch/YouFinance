@@ -70,7 +70,7 @@ pub struct TransactionAmount {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct DebtorAccount {
-    pub iban: String,
+    pub iban: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -98,6 +98,7 @@ pub struct Transaction {
     pub value_date_time: Option<String>,
     pub remittance_information_unstructured: Option<String>,
     pub bank_transaction_code: Option<String>,
+    pub balance_after_minor: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -109,6 +110,12 @@ pub struct Transactions {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct BankTransactions {
     pub transactions: Transactions,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GoCardlessConfig {
+    pub secret_id: String,
+    pub secret_key: String,
 }
 
 #[derive(Debug)]

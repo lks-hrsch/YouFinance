@@ -1,4 +1,5 @@
 [toolchain]
+# https://releases.rs
 # https://rust-lang.github.io/rustup-components-history/x86_64-apple-darwin.html
-channel = "nightly-2025-11-01"
+channel = "nightly-2026-03-16"
 components = ["clippy", "rustfmt", "rust-analyzer"]
