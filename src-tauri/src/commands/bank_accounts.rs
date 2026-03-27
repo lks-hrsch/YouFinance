@@ -424,7 +424,7 @@ pub async fn delete_bank_account<'a>(
     database_state: State<'a, Mutex<DatabaseState>>,
     account_id: i32,
 ) -> Result<(), String> {
-    debug!("commands::bank_accounts::delete_bank_account ID: {}", account_id);
+    debug!("commands::bank_accounts::delete_bank_account invoked");
     let mut connection = database_state.lock().await.connection();
 
     delete_bank_account_internal(&mut connection, account_id)
