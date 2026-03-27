@@ -199,10 +199,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let bank_accounts = parse_response(res, "get_bank_accounts").await?;
-        debug!(
-            "banking::providers::gocardless::get_bank_accounts: {:#?}",
-            bank_accounts
-        );
+        debug!("banking::providers::gocardless::get_bank_accounts: succeeded");
         Ok(bank_accounts)
     }
 
@@ -223,10 +220,7 @@ impl BankingApi for GoCardless {
             .await?;
 
         let bank_transactions = parse_response(res, "get_account_transactions").await?;
-        debug!(
-            "banking::providers::gocardless::get_account_transactions: {:#?}",
-            bank_transactions
-        );
+        debug!("banking::providers::gocardless::get_account_transactions: succeeded");
         Ok(bank_transactions)
     }
 }
