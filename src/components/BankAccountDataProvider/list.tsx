@@ -1,16 +1,18 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { Provider } from "../../models/typeshare_definitions";
+import { Card, CardContent } from "@/components/ui/card";
+import type { Provider } from "@/models/typeshare_definitions";
+import ProviderEditDialog from "./edit-dialog";
 
-const TABLE_HEAD = ["ID", "Provider", "Secret ID", "Secret Key", "Actions"];
+const TABLE_HEAD = ["ID", "Provider", "Actions"];
 
 const BankAccountDataProviderList: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
 
   const fetchProviders = useCallback(() => {
     setIsLoading(true);
@@ -39,7 +41,9 @@ const BankAccountDataProviderList: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="p-4 text-slate-600 text-sm">Loading providers...</div>;
+    return (
+      <div className="p-4 text-slate-600 text-sm">Loading providers...</div>
+    );
   }
 
   return (
@@ -76,29 +80,29 @@ const BankAccountDataProviderList: React.FC = () => {
                       </td>
                       <td className={classes}>
                         <span className="font-normal text-slate-700 text-sm">
-                          {provider.title}
+                          {provider.name}
                         </span>
                       </td>
                       <td className={classes}>
-                        <span className="font-normal text-slate-700 text-sm">
-                          {provider.secret_id}
-                        </span>
-                      </td>
-                      <td className={classes}>
-                        <span className="font-normal text-slate-700 text-sm">
-                          {provider.secret_key}
-                        </span>
-                      </td>
-                      <td className={classes}>
-                        <Button
-                          onClick={() => handleDelete(provider.id)}
-                          size="icon"
-                          variant="ghost"
-                          className="text-slate-900 hover:text-red-600"
-                          title="Delete Provider"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => setEditingProvider(provider)}
+                            size="icon"
+                            title="Edit Provider"
+                            variant="ghost"
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button
+                            className="text-slate-900 hover:text-red-600"
+                            onClick={() => handleDelete(provider.id)}
+                            size="icon"
+                            title="Delete Provider"
+                            variant="ghost"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -108,6 +112,12 @@ const BankAccountDataProviderList: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ProviderEditDialog
+        provider={editingProvider}
+        onClose={() => setEditingProvider(null)}
+        onSaved={fetchProviders}
+      />
     </div>
   );
 };

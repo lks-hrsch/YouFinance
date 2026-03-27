@@ -1,39 +1,77 @@
 "use client";
 
 import { invoke } from "@tauri-apps/api/core";
-import { Trash2, FolderOpen, RefreshCw } from "lucide-react";
+import { FolderOpen, RefreshCw, Trash2 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { AccountWithProvider } from "../../models/typeshare_definitions";
+import type { BankAccountWithProvider } from "../../models/typeshare_definitions";
 
-const TABLE_HEAD = ["ID", "Title", "Institution ID", "Account ID", "IBAN", "Actions"];
+const TABLE_HEAD = [
+  "ID",
+  "Title",
+  "Institution ID",
+  "Account ID",
+  "IBAN",
+  "Last Synced",
+  "Actions",
+];
+
+function getRelativeTime(isoString: string | null | undefined): string {
+  if (!isoString) {
+    return "Never synced";
+  }
+
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60_000);
+  const diffHours = Math.floor(diffMs / 3_600_000);
+  const diffDays = Math.floor(diffMs / 86_400_000);
+
+  if (diffMins < 1) {
+    return "Just now";
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+  if (diffDays < 30) {
+    return `${diffDays}d ago`;
+  }
+
+  return date.toLocaleDateString();
+}
 
 interface BankAccountsListProps {
   refreshTrigger?: number;
 }
 
-const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 }) => {
+const BankAccountsList: React.FC<BankAccountsListProps> = ({
+  refreshTrigger = 0,
+}) => {
   const [groupedAccounts, setGroupedAccounts] = useState<
-    Record<string, AccountWithProvider[]>
+    Record<string, BankAccountWithProvider[]>
   >({});
   const [syncingIds, setSyncingIds] = useState<Set<string | number>>(new Set());
 
   const fetchAccounts = useCallback(() => {
     invoke("get_banking_accounts")
       .then((rustBankAccounts: unknown) => {
-        const bankAccounts = rustBankAccounts as AccountWithProvider[];
+        const bankAccounts = rustBankAccounts as BankAccountWithProvider[];
         const grouped = bankAccounts.reduce(
           (acc, item) => {
-            const key = item.account.bank_connection_id;
+            const key = item.bank_account_provider.bank_connection_id;
             if (!acc[key]) {
               acc[key] = [];
             }
             acc[key].push(item);
             return acc;
           },
-          {} as Record<string, AccountWithProvider[]>
+          {} as Record<string, BankAccountWithProvider[]>
         );
         setGroupedAccounts(grouped);
       })
@@ -46,26 +84,30 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 
     fetchAccounts();
   }, [fetchAccounts, refreshTrigger]);
 
-  const handleDelete = (item: AccountWithProvider) => {
-    if (item.provider_title === "LocalCSV") {
-      invoke("delete_bank_account", { accountId: item.account.id })
+  const handleDelete = (item: BankAccountWithProvider) => {
+    if (item.provider_name === "LocalCSV") {
+      invoke("delete_bank_account", { accountId: item.bank_account.id })
         .then(() => fetchAccounts())
-        .catch((error) => console.error("Failed to delete local account:", error));
+        .catch((error) =>
+          console.error("Failed to delete local account:", error)
+        );
     } else {
       invoke("disconnect_bank_account", {
-        providerTitle: item.provider_title,
-        bankConnectionId: item.account.bank_connection_id,
+        providerTitle: item.provider_name,
+        bankConnectionId: item.bank_account_provider.bank_connection_id,
       })
         .then(() => fetchAccounts())
-        .catch((error) => console.error("Failed to disconnect bank account:", error));
+        .catch((error) =>
+          console.error("Failed to disconnect bank account:", error)
+        );
     }
   };
 
-  const handleOpenFolder = (item: AccountWithProvider) => {
-    if (item.account.institution_id && item.account.iban) {
+  const handleOpenFolder = (item: BankAccountWithProvider) => {
+    if (item.bank_account_provider.institution_id && item.bank_account.iban) {
       invoke("open_account_directory", {
-        bankName: item.account.institution_id,
-        iban: item.account.iban,
+        bankName: item.bank_account_provider.institution_id,
+        iban: item.bank_account.iban,
       }).catch((error) => {
         console.error("Failed to open directory:", error);
       });
@@ -74,9 +116,10 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 
 
   const handleSyncAccount = (accountId: number) => {
     setSyncingIds((prev) => new Set(prev).add(accountId));
-    invoke("sync_account", { accId: accountId })
+    invoke("sync_account", { targetAccountId: accountId })
       .then(() => {
         console.log(`Synced account ${accountId}`);
+        fetchAccounts();
       })
       .catch((error) => {
         console.error(`Failed to sync account ${accountId}:`, error);
@@ -95,6 +138,7 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 
     invoke("sync_provider_accounts", { pId: providerId })
       .then(() => {
         console.log(`Synced accounts for provider ${providerId}`);
+        fetchAccounts();
       })
       .catch((error) => {
         console.error(`Failed to sync provider ${providerId}:`, error);
@@ -116,18 +160,27 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 
 
         return (
           <Card key={bankConnectionId}>
-            <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50 py-3 px-6">
-              <h3 className="font-semibold text-sm text-slate-900 uppercase tracking-wider">
-                {firstItem.provider_title === "LocalCSV" ? "Local CSV Provider" : `Bank Connection: ${bankConnectionId}`}
+            <CardHeader className="flex flex-row items-center justify-between border-b bg-slate-50/50 px-6 py-3">
+              <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wider">
+                {firstItem.provider_name === "LocalCSV"
+                  ? "Local CSV Provider"
+                  : `Bank Connection: ${bankConnectionId}`}
               </h3>
               <Button
-                onClick={() => handleSyncProvider(firstItem.account.provider_id, bankConnectionId)}
+                className="h-8 gap-2 text-xs"
+                disabled={isSyncingProvider}
+                onClick={() =>
+                  handleSyncProvider(
+                    firstItem.bank_account_provider.provider_id,
+                    bankConnectionId
+                  )
+                }
                 size="sm"
                 variant="outline"
-                className="h-8 text-xs gap-2"
-                disabled={isSyncingProvider}
               >
-                <RefreshCw className={`size-3 ${isSyncingProvider ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`size-3 ${isSyncingProvider ? "animate-spin" : ""}`}
+                />
                 {isSyncingProvider ? "Syncing..." : "Sync All"}
               </Button>
             </CardHeader>
@@ -148,69 +201,79 @@ const BankAccountsList: React.FC<BankAccountsListProps> = ({ refreshTrigger = 0 
                   </thead>
                   <tbody>
                     {items.map((item, index) => {
-                      const { account, provider_title } = item;
+                      const { bank_account, bank_account_provider, provider_name } = item;
                       const isLast = index === items.length - 1;
                       const classes = isLast
                         ? "p-4"
                         : "border-b border-slate-100 p-4";
-                      const isSyncingAccount = syncingIds.has(account.id);
+                      const isSyncingAccount = syncingIds.has(bank_account.id);
 
                       return (
-                        <tr key={account.id} className="hover:bg-slate-50 transition-colors">
+                        <tr
+                          className="transition-colors hover:bg-slate-50"
+                          key={bank_account.id}
+                        >
                           <td className={classes}>
                             <span className="font-normal text-slate-700 text-sm">
-                              {account.id}
+                              {bank_account.id}
                             </span>
                           </td>
                           <td className={classes}>
                             <span className="font-medium text-slate-900 text-sm">
-                              {account.title}
+                              {bank_account.name}
                             </span>
                           </td>
                           <td className={classes}>
                             <span className="font-normal text-slate-600 text-sm">
-                              {account.institution_id}
+                              {bank_account_provider.institution_id}
                             </span>
                           </td>
                           <td className={classes}>
                             <span className="font-normal text-slate-600 text-sm">
-                              {account.account_id}
+                              {bank_account_provider.external_account_id}
                             </span>
                           </td>
                           <td className={classes}>
-                            <span className="font-mono text-slate-500 text-xs bg-slate-100 px-1.5 py-0.5 rounded">
-                              {account.iban}
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-500 text-xs">
+                              {bank_account.iban}
+                            </span>
+                          </td>
+                          <td className={classes}>
+                            <span className="font-normal text-slate-600 text-sm">
+                              {getRelativeTime(bank_account_provider.last_synced_at)}
                             </span>
                           </td>
                           <td className={classes}>
                             <div className="flex gap-2">
                               <Button
-                                onClick={() => handleSyncAccount(account.id)}
-                                size="icon"
-                                variant="ghost"
                                 className="size-8 text-slate-700 hover:text-blue-600"
-                                title="Sync Transactions"
                                 disabled={isSyncingAccount}
+                                onClick={() => handleSyncAccount(bank_account.id)}
+                                size="icon"
+                                title="Sync Transactions"
+                                variant="ghost"
                               >
-                                <RefreshCw className={`size-4 ${isSyncingAccount ? "animate-spin" : ""}`} />
+                                <RefreshCw
+                                  className={`size-4 ${isSyncingAccount ? "animate-spin" : ""}`}
+                                />
                               </Button>
-                              {provider_title === "LocalCSV" && (
+                              {provider_name === "LocalCSV" && (
                                 <Button
+                                  className="size-8 text-slate-700 hover:text-emerald-600"
                                   onClick={() => handleOpenFolder(item)}
                                   size="icon"
-                                  variant="ghost"
-                                  className="size-8 text-slate-700 hover:text-emerald-600"
                                   title="Open in Finder"
+                                  variant="ghost"
                                 >
                                   <FolderOpen className="size-4" />
                                 </Button>
                               )}
                               <Button
+                                className="size-8 text-slate-900 hover:text-red-600"
                                 onClick={() => handleDelete(item)}
                                 size="icon"
-                                variant="ghost"
-                                className="size-8 text-slate-900 hover:text-red-600"
                                 title="Delete Account"
+                                variant="ghost"
                               >
                                 <Trash2 className="size-4" />
                               </Button>

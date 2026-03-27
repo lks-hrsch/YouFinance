@@ -76,6 +76,8 @@ erDiagram
         int bank_account_id FK
         int provider_id FK
         string bank_connection_id
+        string institution_id
+        string external_account_id
         string last_synced_at
         string created_at
         string updated_at
@@ -97,8 +99,8 @@ erDiagram
         string creditor_iban
         string creditor_bic
         string mandate_reference
-        long amount_minor
-        long balance_after_minor
+        int amount_minor
+        int balance_after_minor
         string created_at
         string updated_at
         string deleted_at
@@ -130,3 +132,9 @@ erDiagram
 ### TRANSACTION_PROVIDERS Table
 
 The `TRANSACTION_PROVIDERS` table links each imported transaction to the provider that sourced it. This enables tracking of transaction lineage and supports reconciliation workflows where transactions from different providers (e.g., CSV imports, GoCardless API, MTA files) may be cross-referenced. When a transaction is imported from any provider, a corresponding row must be inserted into `TRANSACTION_PROVIDERS` with the transaction ID and provider ID.
+
+### Schema Constraints and Notes
+
+- **UNIQUE Constraint**: The `TRANSACTIONS` table has a UNIQUE constraint on (bank_account_id, booking_date, amount_minor, currency_code, debtor_iban, creditor_iban) to prevent duplicate transactions from being imported multiple times.
+- **Soft Deletes**: The `deleted_at` field is present in all tables but is currently scaffolded and not yet activated. In the future, this will enable soft deletion (marking records as deleted without removing them) for audit and recovery purposes.
+- **Amount Storage**: Monetary amounts are stored as `int` (32-bit integer) in minor units (e.g., cents for EUR). This supports values up to ±21.4 million EUR, which is appropriate for personal finance applications.

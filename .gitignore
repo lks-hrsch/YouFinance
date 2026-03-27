@@ -28,3 +28,6 @@ result-*
 
 # test data
 test-data/
+
+# next.js build output
+.next/

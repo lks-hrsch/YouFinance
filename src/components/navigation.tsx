@@ -21,24 +21,11 @@ export default function Navigation() {
       <Link
         className={cn(
           "font-medium no-underline transition-colors hover:text-primary",
-          pathname === "/settings/bank-account-data-provider"
-            ? "font-bold text-primary"
-            : "text-gray-700"
+          pathname === "/settings" ? "font-bold text-primary" : "text-gray-700"
         )}
-        href="/settings/bank-account-data-provider"
+        href="/settings"
       >
-        Providers
-      </Link>
-      <Link
-        className={cn(
-          "font-medium no-underline transition-colors hover:text-primary",
-          pathname === "/settings/bank-accounts"
-            ? "font-bold text-primary"
-            : "text-gray-700"
-        )}
-        href="/settings/bank-accounts"
-      >
-        Bank Accounts
+        Settings
       </Link>
     </nav>
   );
