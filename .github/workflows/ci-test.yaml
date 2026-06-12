@@ -1,0 +1,37 @@
+name: CI Tests
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Run tests with reporting
+        run: |
+          nix develop --command bash -c "bun install && \
+          cargo nextest run --manifest-path src-tauri/Cargo.toml --profile ci --"
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: src-tauri/target/nextest/ci/junit.xml

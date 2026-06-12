@@ -22,3 +22,12 @@ result-*
 *.njsproj
 *.sln
 *.sw?
+
+# claude
+.claude/
+
+# test data
+test-data/
+
+# next.js build output
+.next/

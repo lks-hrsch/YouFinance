@@ -4,17 +4,20 @@ import { invoke } from "@tauri-apps/api/core";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Transaction } from "../models/typeshare_definitions";
+import type { TransactionWithProviders } from "../models/typeshare_definitions";
 
 const TransactionListComponent: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TransactionWithProviders[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         console.log("Fetching transactions...");
-        const rustTransactions =
-          await invoke<Transaction[]>("get_transactions");
+        const rustTransactions = await invoke<TransactionWithProviders[]>(
+          "get_transactions_with_providers"
+        );
         setTransactions(rustTransactions);
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
@@ -42,27 +45,33 @@ const TransactionListComponent: React.FC = () => {
                 <th className="p-4 text-right font-semibold text-slate-900 text-sm">
                   Amount
                 </th>
+                <th className="p-4 font-semibold text-slate-900 text-sm">
+                  Provider(s)
+                </th>
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction, index) => {
+              {transactions.map(({ transaction, providers }, index) => {
                 const isLast = index === transactions.length - 1;
                 const rowClasses = isLast ? "" : "border-b border-slate-100";
+                const amountDisplay = (transaction.amount_minor / 100).toFixed(
+                  2
+                );
 
                 return (
                   <tr className={rowClasses} key={transaction.id.toString()}>
                     <td className="p-4">
                       <span className="font-normal text-slate-700 text-sm">
-                        {transaction.date}
+                        {transaction.booking_date}
                       </span>
                     </td>
                     <td className="p-4">
                       <div className="flex flex-col">
                         <span className="font-normal text-slate-900 text-sm">
-                          {transaction.debitor_name}
+                          {transaction.debtor_name}
                         </span>
                         <span className="text-slate-500 text-xs">
-                          {transaction.debitor_iban}
+                          {transaction.debtor_iban}
                         </span>
                       </div>
                     </td>
@@ -78,18 +87,34 @@ const TransactionListComponent: React.FC = () => {
                     </td>
                     <td className="p-4 text-right">
                       <div className="inline-flex items-center gap-1">
-                        {transaction.amount < 0 ? (
+                        {transaction.amount_minor < 0 ? (
                           <span className="font-medium text-red-600 text-sm">
-                            {transaction.amount}
+                            {amountDisplay}
                           </span>
                         ) : (
                           <span className="font-medium text-green-600 text-sm">
-                            +{transaction.amount}
+                            +{amountDisplay}
                           </span>
                         )}
                         <span className="text-slate-600 text-sm">
-                          {transaction.currency}
+                          {transaction.currency_code}
                         </span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-1">
+                        {providers.length > 0 ? (
+                          providers.map((provider) => (
+                            <span
+                              className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 font-medium text-blue-800 text-xs"
+                              key={provider}
+                            >
+                              {provider}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-500 text-xs">—</span>
+                        )}
                       </div>
                     </td>
                   </tr>

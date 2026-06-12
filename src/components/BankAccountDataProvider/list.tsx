@@ -1,37 +1,49 @@
-"use client";
-
 import { invoke } from "@tauri-apps/api/core";
+import { Pencil, Trash2 } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Provider } from "../../models/typeshare_definitions";
+import type { Provider } from "@/models/typeshare_definitions";
+import ProviderEditDialog from "./edit-dialog";
 
-const TABLE_HEAD = ["ID", "Provider", "Secret ID", "Secret Key"];
+const TABLE_HEAD = ["ID", "Provider", "Actions"];
 
 const BankAccountDataProviderList: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
 
-  useEffect(() => {
-    const fetchProviders = () => {
-      invoke("get_banking_providers")
-        .then((rustBankingProviders: unknown) => {
-          const bankingProviders = rustBankingProviders as Provider[];
-          setProviders(bankingProviders);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch providers:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    };
-
-    fetchProviders();
+  const fetchProviders = useCallback(() => {
+    setIsLoading(true);
+    invoke("get_banking_providers")
+      .then((rustBankingProviders: unknown) => {
+        const bankingProviders = rustBankingProviders as Provider[];
+        setProviders(bankingProviders);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch providers:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
+  useEffect(() => {
+    fetchProviders();
+  }, [fetchProviders]);
+
+  const handleDelete = (providerId: number) => {
+    console.log(`Delete provider with ID: ${providerId}`);
+    invoke("delete_banking_provider", { providerId })
+      .then(() => fetchProviders())
+      .catch((error) => console.error("Failed to delete provider:", error));
+  };
+
   if (isLoading) {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="p-4 text-slate-600 text-sm">Loading providers...</div>
+    );
   }
 
   return (
@@ -68,18 +80,29 @@ const BankAccountDataProviderList: React.FC = () => {
                       </td>
                       <td className={classes}>
                         <span className="font-normal text-slate-700 text-sm">
-                          {provider.title}
+                          {provider.name}
                         </span>
                       </td>
                       <td className={classes}>
-                        <span className="font-normal text-slate-700 text-sm">
-                          {provider.secret_id}
-                        </span>
-                      </td>
-                      <td className={classes}>
-                        <span className="font-normal text-slate-700 text-sm">
-                          {provider.secret_key}
-                        </span>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => setEditingProvider(provider)}
+                            size="icon"
+                            title="Edit Provider"
+                            variant="ghost"
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                          <Button
+                            className="text-slate-900 hover:text-red-600"
+                            onClick={() => handleDelete(provider.id)}
+                            size="icon"
+                            title="Delete Provider"
+                            variant="ghost"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -89,6 +112,12 @@ const BankAccountDataProviderList: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ProviderEditDialog
+        onClose={() => setEditingProvider(null)}
+        onSaved={fetchProviders}
+        provider={editingProvider}
+      />
     </div>
   );
 };

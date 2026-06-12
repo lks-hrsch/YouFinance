@@ -35,22 +35,42 @@
         buildInputs = with pkgs; [
           # Rust toolchain from rust-overlay
           rustToolchain
+          cargo-nextest # testing
 
           # Node.js and package managers
           nodejs-slim_24
           bun
           biome
 
-          # Typeshare CLI for generating TypeScript types from Rust
-          typeshare
-
           # build dependencies
           sqlite
+          typeshare
+          diesel-cli
+        ] ++ lib.optionals stdenv.isLinux [
+          # Linux system libraries for Tauri
+          pkg-config
+          glib
+          gobject-introspection
+          gtk3
+          webkitgtk_4_1
+          libsoup_3
+          cairo
+          pango
+          gdk-pixbuf
+          atk
+          at-spi2-core
+          openssl
+        ];
+
+        # Native build inputs (for build scripts to find libraries)
+        nativeBuildInputs = with pkgs; lib.optionals stdenv.isLinux [
+          pkg-config
         ];
       in
       {
         devShells.default = pkgs.mkShell {
           packages = buildInputs;
+          inherit nativeBuildInputs;
 
           shellHook = ''
             echo "activated dev shell"

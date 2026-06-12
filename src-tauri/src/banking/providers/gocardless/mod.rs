@@ -3,6 +3,7 @@ pub mod structs;
 extern crate reqwest;
 
 use std::collections::HashMap;
+use serde::de::DeserializeOwned;
 
 use structs::*;
 use tauri_plugin_log::log::{
@@ -15,24 +16,43 @@ use super::super::{
     trait_banking_api::BankingApi,
 };
 
-impl GoCardless {
-    // Check if access_token is available
-    fn add_authorization_header(&self, headers: &mut reqwest::header::HeaderMap) -> Result<(), ApiError> {
-        match &self.access_token {
-            Some(access_token) => {
-                headers.insert(
-                    reqwest::header::AUTHORIZATION,
-                    reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
-                );
-                Ok(())
-            }
-            _none => Err(ApiError::Custom("access token not available".into())),
-        }
+async fn parse_response<T: DeserializeOwned>(
+    res: reqwest::Response,
+    context: &str,
+) -> Result<T, ApiError> {
+    let status = res.status();
+    let text = res.text().await?;
+
+    if !status.is_success() {
+        let message = serde_json::from_str::<GoCardlessApiError>(&text)
+            .ok()
+            .and_then(|e| {
+                let summary = e.summary.unwrap_or_default();
+                let detail = e.detail.unwrap_or_default();
+                if summary.is_empty() && detail.is_empty() {
+                    None
+                } else {
+                    Some(format!("{}: {}", summary, detail))
+                }
+            })
+            .unwrap_or_else(|| text.clone());
+        error!("{} (HTTP {}): {}", context, status.as_u16(), message);
+        return Err(ApiError::Custom(format!(
+            "{} (HTTP {}): {}",
+            context,
+            status.as_u16(),
+            message
+        )));
     }
+
+    serde_json::from_str::<T>(&text).map_err(|e| {
+        error!("{}: parse error: {}. Raw body: {}", context, e, text);
+        ApiError::Custom(format!("{}: failed to parse response: {}", context, e))
+    })
 }
 
-impl BankingApi for GoCardless {
-    async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError> {
+impl GoCardless {
+    pub async fn new(secret_id: &str, secret_key: &str) -> Result<GoCardless, ApiError> {
         let mut this = GoCardless {
             base_url: "https://bankaccountdata.gocardless.com/api/v2/".into(),
             secret_id: secret_id.into(),
@@ -52,6 +72,22 @@ impl BankingApi for GoCardless {
         }
     }
 
+    // Check if access_token is available
+    fn add_authorization_header(&self, headers: &mut reqwest::header::HeaderMap) -> Result<(), ApiError> {
+        match &self.access_token {
+            Some(access_token) => {
+                headers.insert(
+                    reqwest::header::AUTHORIZATION,
+                    reqwest::header::HeaderValue::from_str(&format!("Bearer {}", access_token.access))?,
+                );
+                Ok(())
+            }
+            _none => Err(ApiError::Custom("access token not available".into())),
+        }
+    }
+}
+
+impl BankingApi for GoCardless {
     async fn get_access_token(&self) -> Result<AccessToken, ApiError> {
         let client = reqwest::Client::new();
         let mut headers = reqwest::header::HeaderMap::new();
@@ -72,13 +108,7 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json::<AccessToken>().await {
-            Ok(access_token) => Ok(access_token),
-            Err(e) => {
-                error!("failed to parse access token: {}", e);
-                Err(ApiError::Custom(format!("failed to parse access token: {}", e)))
-            }
-        }
+        parse_response(res, "get_access_token").await
     }
 
     async fn get_banks_by_country(&self, country: &str) -> Result<Vec<Bank>, ApiError> {
@@ -93,16 +123,9 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json::<Vec<Bank>>().await {
-            Ok(banks) => {
-                debug!("banking::providers::gocardless::get_banks_by_country: {:#?}", banks);
-                Ok(banks)
-            }
-            Err(e) => {
-                error!("failed to parse banks: {}", e);
-                Err(ApiError::Custom(format!("failed to parse banks: {}", e)))
-            }
-        }
+        let banks = parse_response(res, "get_banks_by_country").await?;
+        debug!("banking::providers::gocardless::get_banks_by_country: {:#?}", banks);
+        Ok(banks)
     }
 
     async fn connect_bank(&self, redirect: &str, institution_id: &str) -> Result<BankConnection, ApiError> {
@@ -118,9 +141,6 @@ impl BankingApi for GoCardless {
         let mut map = HashMap::new();
         map.insert("redirect", redirect);
         map.insert("institution_id", institution_id);
-        // map.insert("reference", reference);
-        // map.insert("agreement", agreement);
-        // map.insert("user_language", user_language);
 
         let res = client
             .post(format!("{}requisitions/", self.base_url.to_owned()))
@@ -129,16 +149,9 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json::<BankConnection>().await {
-            Ok(bank_connection) => {
-                debug!("banking::providers::gocardless::connect_bank: {:#?}", bank_connection);
-                Ok(bank_connection)
-            }
-            Err(e) => {
-                error!("failed to parse bank connection: {}", e);
-                Err(ApiError::Custom(format!("failed to parse bank connection: {}", e)))
-            }
-        }
+        let bank_connection = parse_response(res, "connect_bank").await?;
+        debug!("banking::providers::gocardless::connect_bank: {:#?}", bank_connection);
+        Ok(bank_connection)
     }
 
     async fn disconnect_bank(&self, bank_connection_id: &str) -> Result<(), ApiError> {
@@ -161,7 +174,6 @@ impl BankingApi for GoCardless {
         let body = res.text().await?;
         debug!("banking::providers::gocardless::disconnect_bank: {}", body);
         if status.is_success() {
-            // log the body
             debug!("disconnect bank: {}", body);
             Ok(())
         } else {
@@ -186,19 +198,9 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json::<BankAccounts>().await {
-            Ok(bank_accounts) => {
-                debug!(
-                    "banking::providers::gocardless::get_bank_accounts: {:#?}",
-                    bank_accounts
-                );
-                Ok(bank_accounts)
-            }
-            Err(e) => {
-                error!("failed to parse bank accounts: {}", e);
-                Err(ApiError::Custom(format!("failed to parse bank accounts: {}", e)))
-            }
-        }
+        let bank_accounts = parse_response(res, "get_bank_accounts").await?;
+        debug!("banking::providers::gocardless::get_bank_accounts: succeeded");
+        Ok(bank_accounts)
     }
 
     async fn get_account_transactions(&self, account_id: &str) -> Result<BankTransactions, ApiError> {
@@ -217,18 +219,8 @@ impl BankingApi for GoCardless {
             .send()
             .await?;
 
-        match res.json().await {
-            Ok(bank_transactions) => {
-                debug!(
-                    "banking::providers::gocardless::get_account_transactions: {:#?}",
-                    bank_transactions
-                );
-                Ok(bank_transactions)
-            }
-            Err(e) => {
-                error!("failed to parse bank transactions: {}", e);
-                Err(ApiError::Custom(format!("failed to parse bank transactions: {}", e)))
-            }
-        }
+        let bank_transactions = parse_response(res, "get_account_transactions").await?;
+        debug!("banking::providers::gocardless::get_account_transactions: succeeded");
+        Ok(bank_transactions)
     }
 }
